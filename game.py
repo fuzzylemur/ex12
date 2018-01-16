@@ -40,7 +40,7 @@ class Game:
             if self.__board[row][column] == self.EMPTY:
                 self.__board[row][column] = self.get_current_player()
                 self.__counter += 1
-                break
+                return (row, column)
 
         self.print_board()
         print('******************************')
