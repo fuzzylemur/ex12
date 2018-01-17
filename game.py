@@ -25,13 +25,14 @@ class Game:
             self.__board.append(temp_row)
 
         self.__counter = 0
+        self.__game_on = 1
 
     def make_move(self, column):
         """
         :param column:
         :return:
         """
-        if column < 0 or column > 6 or self.is_col_full(column):
+        if column < 0 or column > 6 or self.is_col_full(column) or not self.__game_on:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
         for row in range(self.BOARD_Y-1, -1, -1):
@@ -70,10 +71,12 @@ class Game:
                         if self.__board[next_cell[0]][next_cell[1]] != cell_color:
                             break
                     else:
+                        self.__game_on = 0
                         return cell_color, (i,j), direction           #TODO check returns
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
-            return self.DRAW, (0,0), (0,0)
+            self.__game_on = 0
+            return self.DRAW, (0,0), (0,0)                  #TODO this is ugly
 
     def print_board(self):
         for row in self.__board:
