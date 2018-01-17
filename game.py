@@ -8,11 +8,9 @@ class Game:
     BOARD_Y = 6
     EMPTY = None
     ILLEGAL_MOVE_MSG = 'Illegal move'
-    DELIMITER = '*'
     WIN_ONE = str(PLAYER_ONE)*4
     WIN_TWO = str(PLAYER_TWO)*4
     DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0]]
-
 
     def __init__(self):
         """
@@ -39,7 +37,7 @@ class Game:
             if self.__board[row][column] == self.EMPTY:
                 self.__board[row][column] = self.get_current_player()
                 self.__counter += 1
-                return (row, column)
+                return row, column
 
         #self.print_board()
         #print('******************************')

@@ -9,7 +9,8 @@ ARG_ERROR = "Illegal program arguments."
 ARG_PLAYERS = ['human', 'ai']
 ARG_PORT_MAX = 65535
 
-class FourInARow():
+
+class FourInARow:
 
     def __init__(self, root, player, port, ip=None):
         """
@@ -19,10 +20,8 @@ class FourInARow():
         """
         self.__game = Game()
         self.__root = root
-
         self.__player = player
-        self.__port = port
-        self.__ip = ip
+
         self.__communicator = Communicator(self.__root, port, ip)
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
@@ -30,7 +29,9 @@ class FourInARow():
         self.__init_gui()
 
     def __init_gui(self):
-
+        """
+        :return:
+        """
         self.canvas = tk.Canvas(self.__root, width=700, height=700, bg='black')
         self.canvas.pack()
 
@@ -38,18 +39,22 @@ class FourInARow():
         for j in range(6):
             temp_row = []
             for i in range(7):
-                temp_row.append(self.canvas.create_oval(100*i, 100*j+50, 100*i+100, 100*j+150, fill="white"))
+                temp_row.append(self.canvas.create_oval(100*i, 100*j+50, 100*i+90, 100*j+140, fill="white"))
             self.circles.append(temp_row)
 
         for i in range(7):
-            temp_button = tk.Button(self.canvas, text='button '+str(i), command=lambda col=i: self.__make_move(col))
+            temp_button = tk.Button(self.canvas, text='button '+str(i), command=lambda col=i: self.__one_turn(col))
             temp_button.place(x=i*100, y=0)
 
         self.msg_box = tk.Label(self.canvas, text='i', fg='red', bg='black')
         self.msg_box.place(x=10, y=670)
 
-
     def update_cell(self, coordinate, player):
+        """
+        :param coordinate:
+        :param player:
+        :return:
+        """
         row = coordinate[0]
         col = coordinate[1]
 
@@ -60,11 +65,18 @@ class FourInARow():
             self.canvas.itemconfig(self.circles[row][col], fill="red")
 
     def print_to_screen(self, msg):
+        """
+        :param msg:
+        :return:
+        """
         self.msg_box = tk.Label(self.canvas, text=msg, fg='red', bg='black')
         self.msg_box.place(x=10, y=670)
 
-
-    def __make_move(self, column):
+    def __one_turn(self, column):
+        """
+        :param column:
+        :return:
+        """
         self.print_to_screen('pressed' + str(column))
         try:
             location = self.__game.make_move(column)
@@ -78,15 +90,13 @@ class FourInARow():
             self.__communicator.send_message(str(column))
         else:
             self.__end_game(winner)
-            self.__communicator.send_message('end'+str(winner))
-
-
+            self.__communicator.send_message('end'+str(winner[0]))
 
     def __end_game(self, winner):
         """
         :return:
         """
-        self.print_to_screen('winner is '+str(winner))
+        self.print_to_screen('winner is '+str(winner[0]))
 
     def __handle_message(self, text):
         """
@@ -103,6 +113,7 @@ class FourInARow():
             self.update_cell(location, player)
         else:
             self.__end_game(text)
+
 
 def main(args):
     """
