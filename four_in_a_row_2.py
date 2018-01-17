@@ -28,33 +28,32 @@ class FourInARow:
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.handle_message)
 
-        self.__init_gui()
+        self.build_gui()
 
-    def __init_gui(self):
+    def build_gui(self):
         """
         :return:
         """
-        self.canvas = tk.Canvas(self.__root, width=700, height=700, bg='black')
-        self.canvas.pack()
+        self.__canvas = tk.Canvas(self.__root, width=700, height=700, bg='black')
+        self.__canvas.pack()
 
-        self.circles = []
-        for j in range(6):
+        self.__circles = []
+        for j in range(Game.BOARD_Y):
             temp_row = []
-            for i in range(7):
-                temp_row.append(self.canvas.create_oval(100*i, 100*j+50, 100*i+90, 100*j+140, fill="white"))
-            self.circles.append(temp_row)
+            for i in range(Game.BOARD_X):
+                temp_row.append(self.__canvas.create_oval(5+100*i, 100*j+50, 100*i+95, 100*j+140, fill="white"))
+            self.__circles.append(temp_row)
 
         for i in range(7):
-            temp_button = tk.Button(self.canvas, text='button '+str(i), command=lambda col=i: self.one_turn(col))
+            temp_button = tk.Button(self.__canvas, text='button '+str(i), command=lambda col=i: self.one_turn(col))
             temp_button.place(x=i*100, y=0)
 
-        self.msg_box = tk.Label(self.canvas, text='i', fg='red', bg='black')
-        self.msg_box.place(x=10, y=670)
+        self.__msg_box = tk.Label(self.__canvas, text='Yo yo yo...', fg='red', bg='black')
+        self.__msg_box.place(x=10, y=670)
 
     def update_cell(self, coordinate):
         """
         :param coordinate:
-        :param player:
         :return:
         """
         row = coordinate[0]
@@ -62,18 +61,18 @@ class FourInARow:
         player = self.__game.get_player_at(row, col)
 
         if player == Game.PLAYER_ONE:
-            self.canvas.itemconfig(self.circles[row][col], fill=COLOR_ONE)
+            self.__canvas.itemconfig(self.__circles[row][col], fill=COLOR_ONE)
 
         if player == Game.PLAYER_TWO:
-            self.canvas.itemconfig(self.circles[row][col], fill=COLOR_TWO)
+            self.__canvas.itemconfig(self.__circles[row][col], fill=COLOR_TWO)
 
     def print_to_screen(self, msg):
         """
         :param msg:
         :return:
         """
-        self.msg_box = tk.Label(self.canvas, text=msg, fg='red', bg='black')
-        self.msg_box.place(x=10, y=670)
+        self.__msg_box.config(text=msg)
+        self.__msg_box.place(x=10, y=670)
 
     def one_turn(self, column):
         """
@@ -110,9 +109,8 @@ class FourInARow:
         :return: None.
         """
         if 'end' not in text:
-            location = self.__game.make_move(text)
-            player = self.__game.get_player_at(location[0], location[1])
-            self.update_cell(location, player)
+            coord = self.__game.make_move(text)
+            self.update_cell(coord)
         else:
             self.end_game(text[3])
 
