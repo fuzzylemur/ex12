@@ -9,7 +9,7 @@ ARG_ERROR = "Illegal program arguments."
 ARG_PLAYERS = ['human', 'ai']
 ARG_PORT_MAX = 65535
 
-class Gui():
+class FourInARow():
 
     def __init__(self, root, player, port, ip=None):
         """
@@ -115,7 +115,7 @@ def main(args):
         ip = args[3]
 
     root = tk.Tk()
-    gui = Gui(root, player, port)
+    FourInARow(root, player, port)
     root.mainloop()
 
 if __name__ == "__main__":

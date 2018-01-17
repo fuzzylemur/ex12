@@ -55,7 +55,7 @@ class Game:
             return False
 
 
-    def get_winner(self):
+    def get_winner(self):                           #TODO make it check from bottom up
         """
         :return:
         """
