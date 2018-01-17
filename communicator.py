@@ -41,6 +41,7 @@ class Communicator:
             self.__server_socket.listen(1)
             self.__server_socket.setblocking(0) # non blocking.
 
+
     def connect(self):
         """
         Has to be invoked before any message sending and receiving can be
