@@ -56,8 +56,7 @@ class FourInARow:
         :param coordinate:
         :return:
         """
-        row = coordinate[0]
-        col = coordinate[1]
+        row, col = coordinate[0], coordinate[1]
         player = self.__game.get_player_at(row, col)
 
         if player == Game.PLAYER_ONE:
