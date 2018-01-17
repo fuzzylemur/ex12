@@ -71,10 +71,10 @@ class Game:
                         if self.__board[next_cell[0]][next_cell[1]] != cell_color:
                             break
                     else:
-                        return (cell_color, (i,j), direction)           #TODO check returns
+                        return cell_color, (i,j), direction           #TODO check returns
 
-        if self.__counter == self.BOARD_X*self.BOARD_Y-1:
-            return self.DRAW
+        if self.__counter == self.BOARD_X*self.BOARD_Y:
+            return self.DRAW, (0,0), (0,0)
 
     def print_board(self):
         for row in self.__board:

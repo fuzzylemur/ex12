@@ -8,6 +8,8 @@ import tkinter as tk
 ARG_ERROR = "Illegal program arguments."
 ARG_PLAYERS = ['human', 'ai']
 ARG_PORT_MAX = 65535
+COLOR_ONE = 'blue'
+COLOR_TWO = 'red'
 
 
 class FourInARow:
@@ -49,7 +51,7 @@ class FourInARow:
         self.msg_box = tk.Label(self.canvas, text='i', fg='red', bg='black')
         self.msg_box.place(x=10, y=670)
 
-    def update_cell(self, coordinate, player):
+    def update_cell(self, coordinate):
         """
         :param coordinate:
         :param player:
@@ -57,12 +59,13 @@ class FourInARow:
         """
         row = coordinate[0]
         col = coordinate[1]
+        player = self.__game.get_player_at(row, col)
 
-        if player == 0:
-            self.canvas.itemconfig(self.circles[row][col], fill="blue")
+        if player == Game.PLAYER_ONE:
+            self.canvas.itemconfig(self.circles[row][col], fill=COLOR_ONE)
 
-        if player == 1:
-            self.canvas.itemconfig(self.circles[row][col], fill="red")
+        if player == Game.PLAYER_TWO:
+            self.canvas.itemconfig(self.circles[row][col], fill=COLOR_TWO)
 
     def print_to_screen(self, msg):
         """
@@ -79,9 +82,8 @@ class FourInARow:
         """
         self.print_to_screen('pressed' + str(column))
         try:
-            location = self.__game.make_move(column)
-            player = self.__game.get_player_at(location[0], location[1])
-            self.update_cell(location, player)
+            coord = self.__game.make_move(column)
+            self.update_cell(coord)
         except:
             self.print_to_screen(self.__game.ILLEGAL_MOVE_MSG)
 
@@ -112,7 +114,7 @@ class FourInARow:
             player = self.__game.get_player_at(location[0], location[1])
             self.update_cell(location, player)
         else:
-            self.end_game(text)
+            self.end_game(text[3])
 
 
 def main(args):
