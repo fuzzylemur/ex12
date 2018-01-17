@@ -24,7 +24,7 @@ class FourInARow:
 
         self.__communicator = Communicator(self.__root, port, ip)
         self.__communicator.connect()
-        self.__communicator.bind_action_to_message(self.__handle_message)
+        self.__communicator.bind_action_to_message(self.handle_message)
 
         self.__init_gui()
 
@@ -43,7 +43,7 @@ class FourInARow:
             self.circles.append(temp_row)
 
         for i in range(7):
-            temp_button = tk.Button(self.canvas, text='button '+str(i), command=lambda col=i: self.__one_turn(col))
+            temp_button = tk.Button(self.canvas, text='button '+str(i), command=lambda col=i: self.one_turn(col))
             temp_button.place(x=i*100, y=0)
 
         self.msg_box = tk.Label(self.canvas, text='i', fg='red', bg='black')
@@ -72,7 +72,7 @@ class FourInARow:
         self.msg_box = tk.Label(self.canvas, text=msg, fg='red', bg='black')
         self.msg_box.place(x=10, y=670)
 
-    def __one_turn(self, column):
+    def one_turn(self, column):
         """
         :param column:
         :return:
@@ -89,16 +89,16 @@ class FourInARow:
         if winner is None:
             self.__communicator.send_message(str(column))
         else:
-            self.__end_game(winner)
+            self.end_game(winner)
             self.__communicator.send_message('end'+str(winner[0]))
 
-    def __end_game(self, winner):
+    def end_game(self, winner):
         """
         :return:
         """
         self.print_to_screen('winner is '+str(winner[0]))
 
-    def __handle_message(self, text):
+    def handle_message(self, text):
         """
         Specifies the event handler for the message getting event in the
         communicator. Prints a message when invoked (and invoked by the
@@ -112,7 +112,7 @@ class FourInARow:
             player = self.__game.get_player_at(location[0], location[1])
             self.update_cell(location, player)
         else:
-            self.__end_game(text)
+            self.end_game(text)
 
 
 def main(args):
