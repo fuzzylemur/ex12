@@ -19,37 +19,39 @@ class Gui():
         """
         self.__game = Game()
         self.__root = root
-        self.__init_gui()
 
         self.__player = player
         self.__port = port
         self.__ip = ip
-        self.__communicator = Communicator(root, port, ip)
+        self.__communicator = Communicator(self.__root, port, ip)
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
+
+        self.__init_gui()
 
     def __init_gui(self):
 
         self.canvas = tk.Canvas(self.__root, width=700, height=700, bg='black')
         self.canvas.pack()
 
-        for i in range(7):
-            temp_button = tk.Button(self.canvas, text='button '+str(i), command=self.__make_move(i))
-            temp_button.place(x=i*100, y=0)
-
         self.circles = []
-        for i in range(7):
+        for j in range(6):
             temp_row = []
-            for j in range(6):
+            for i in range(7):
                 temp_row.append(self.canvas.create_oval(100*i, 100*j+50, 100*i+100, 100*j+150, fill="white"))
             self.circles.append(temp_row)
 
-        self.msg_box = tk.Label(self.canvas, text='i am a message', fg='red', bg='black')
+        for i in range(7):
+            temp_button = tk.Button(self.canvas, text='button '+str(i), command=lambda col=i: self.__make_move(col))
+            temp_button.place(x=i*100, y=0)
+
+        self.msg_box = tk.Label(self.canvas, text='i', fg='red', bg='black')
         self.msg_box.place(x=10, y=670)
 
+
     def update_cell(self, coordinate, player):
-        row = coordinate[1]
-        col = coordinate[0]
+        row = coordinate[0]
+        col = coordinate[1]
 
         if player == 0:
             self.canvas.itemconfig(self.circles[row][col], fill="blue")
@@ -58,9 +60,12 @@ class Gui():
             self.canvas.itemconfig(self.circles[row][col], fill="red")
 
     def print_to_screen(self, msg):
-        self.msg_box.config(text=msg)
+        self.msg_box = tk.Label(self.canvas, text=msg, fg='red', bg='black')
+        self.msg_box.place(x=10, y=670)
+
 
     def __make_move(self, column):
+        self.print_to_screen('pressed' + str(column))
         try:
             location = self.__game.make_move(column)
             player = self.__game.get_player_at(location[0], location[1])
@@ -81,7 +86,7 @@ class Gui():
         """
         :return:
         """
-        pass
+        self.print_to_screen('winner is '+str(winner))
 
     def __handle_message(self, text):
         """
@@ -125,5 +130,5 @@ if __name__ == "__main__":
         print(ARG_ERROR)
 """
 
-    args = ['human', 8000, 0]
+    args = [0, 'human', 8000]
     main(args)

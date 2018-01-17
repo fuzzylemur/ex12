@@ -6,12 +6,11 @@ class Game:
     DRAW = 2
     BOARD_X = 7
     BOARD_Y = 6
-    EMPTY = 8
+    EMPTY = None
     ILLEGAL_MOVE_MSG = 'Illegal move'
     DELIMITER = '*'
     WIN_ONE = str(PLAYER_ONE)*4
     WIN_TWO = str(PLAYER_TWO)*4
-    DIAGONAL_OFFSET = 4
     DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0]]
 
 
@@ -42,8 +41,8 @@ class Game:
                 self.__counter += 1
                 return (row, column)
 
-        self.print_board()
-        print('******************************')
+        #self.print_board()
+        #print('******************************')
 
     def is_col_full(self, column):
         """
@@ -62,14 +61,12 @@ class Game:
         """
         for i, row in enumerate(self.__board):
             for j, cell in enumerate(row):
-                print(i,j,' cell')
                 if cell == self.EMPTY:
                     continue
                 cell_color = cell
                 for direction in self.DIRECTIONS:
                     for k in range(1,4):
                         next_cell = (i+k*direction[0], j+k*direction[1])
-                        print(next_cell)
                         if next_cell[0] not in range(0,self.BOARD_Y) or next_cell[1] not in range(0,self.BOARD_X):
                             break
 
