@@ -103,8 +103,7 @@ class FourInARow:
         """
         Specifies the event handler for the message getting event in the
         communicator. Prints a message when invoked (and invoked by the
-        communicator when a message is received). The message will
-        automatically disappear after a fixed interval.
+        communicator when a message is received).
         :param text: the text to be printed.
         :return: None.
         """
