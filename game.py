@@ -41,7 +41,6 @@ class Game:
                 return row, column
 
         #self.print_board()
-        #print('******************************')
 
     def is_col_full(self, column):
         """
@@ -79,6 +78,8 @@ class Game:
     def print_board(self):
         for row in self.__board:
             print(row, '\n')
+        print('*  '*20)
+
 
     def get_player_at(self, row, col):
         """
@@ -98,8 +99,7 @@ class Game:
             return self.PLAYER_TWO
 
     def get_board(self):
+        """
+        :return:
+        """
         return self.__board
-
-#game = Game()
-
-#print(game.get_winner())

@@ -80,6 +80,7 @@ class FourInARow:
         :return:
         """
         self.print_to_screen('pressed' + str(column))
+
         try:
             coord = self.__game.make_move(column)
             self.update_cell(coord)
