@@ -65,7 +65,7 @@ class FourInARow:
         if player == Game.PLAYER_TWO:
             self.__canvas.itemconfig(self.__circles[row][col], fill=COLOR_TWO)
 
-    def print_to_screen(self, msg):
+    def print_to_gui(self, msg):
         """
         :param msg:
         :return:
@@ -78,13 +78,13 @@ class FourInARow:
         :param column:
         :return:
         """
-        self.print_to_screen('pressed' + str(column))
+        self.print_to_gui('pressed' + str(column))
 
         try:
             coord = self.__game.make_move(column)
             self.update_cell(coord)
         except:
-            self.print_to_screen(self.__game.ILLEGAL_MOVE_MSG)
+            self.print_to_gui(self.__game.ILLEGAL_MOVE_MSG)
 
         winner = self.__game.get_winner()
         if winner is None:
@@ -97,7 +97,7 @@ class FourInARow:
         """
         :return:
         """
-        self.print_to_screen('winner is '+str(winner[0]))
+        self.print_to_gui('winner is '+str(winner[0]))
 
     def handle_message(self, text):
         """
@@ -140,5 +140,5 @@ if __name__ == "__main__":
         print(ARG_ERROR)
 """
 
-    args = [0, 'human', 8000]
-    main(args)
+    argss = [0, 'human', 8000]
+    main(argss)
