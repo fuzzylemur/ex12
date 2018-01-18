@@ -56,7 +56,7 @@ class FourInARow:
         :param coordinate:
         :return:
         """
-        row, col = coordinate[0], coordinate[1]
+        row, col = coordinate
         player = self.__game.get_player_at(row, col)
 
         if player == Game.PLAYER_ONE:
@@ -78,26 +78,30 @@ class FourInARow:
         :param column:
         :return:
         """
-        self.print_to_gui('pressed' + str(column))
 
         try:
-            coord = self.__game.make_move(column)
+            self.__game.make_move(column)
+            coord = self.__game.get_coord()
             self.update_cell(coord)
+
         except:
             self.print_to_gui(self.__game.ILLEGAL_MOVE_MSG)
 
         winner = self.__game.get_winner()
+        self.print_to_gui('pressed ' + str(column) + '  last coord ' + str(self.__game.get_coord())+' winner '+str(winner))
+
         if winner is None:
             self.__communicator.send_message(str(column))
         else:
             self.end_game(winner)
-            self.__communicator.send_message('end'+str(winner[0]))
+            self.__communicator.send_message('end' + str(winner))
 
     def end_game(self, winner):
         """
         :return:
         """
-        self.print_to_gui('winner is '+str(winner[0]))
+        win_info = self.__game.get_win_info()
+        self.print_to_gui('winner is '+str(winner))
 
     def handle_message(self, text):
         """
@@ -119,7 +123,7 @@ def main(args):
     :return:
     """
     player = args[1]
-    port = args[2]
+    port = int(args[2])
 
     if len(args) > 3:
         ip = args[3]
@@ -129,16 +133,14 @@ def main(args):
     root.mainloop()
 
 if __name__ == "__main__":
-    """
+
     if not 2 < len(sys.argv) < 4:
         print(ARG_ERROR)
 
     if sys.argv[1] not in ARG_PLAYERS:
         print(ARG_ERROR)
 
-    if sys.argv[2] < ARG_PORT_MAX:
+    if int(sys.argv[2]) < ARG_PORT_MAX:
         print(ARG_ERROR)
-"""
 
-    argss = [0, 'human', 8000]
-    main(argss)
+    main(sys.argv)

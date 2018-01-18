@@ -11,21 +11,21 @@ class Game:
     BOARD_Y = 6
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
-    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0]]
+    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]
 
     def __init__(self):
         """
 
         """
-        self.__board = []
+        self.__board = {}
         for row in range(self.BOARD_Y):
-            temp_row = []
             for col in range(self.BOARD_X):
-                temp_row.append(self.EMPTY_CELL)
-            self.__board.append(temp_row)
+                self.__board[row,col] = self.EMPTY_CELL
 
         self.__counter = 0
         self.__game_on = 1
+        self.__last_coord = None
+        self.__win_direction = None
 
     def make_move(self, column):
         """
@@ -36,10 +36,12 @@ class Game:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
         for row in range(self.BOARD_Y-1, -1, -1):
-            if self.__board[row][column] == self.EMPTY_CELL:
-                self.__board[row][column] = self.get_current_player()
+            coord = row, column
+            if self.__board[coord] == self.EMPTY_CELL:
+                self.__board[coord] = self.get_current_player()
+                self.__last_coord = coord
                 self.__counter += 1
-                return row, column
+                break
 
         #self.print_board()
 
@@ -48,41 +50,42 @@ class Game:
         :param column:
         :return:
         """
-        if self.__board[0][column] != self.EMPTY_CELL:
+        if self.__board[0, column] != self.EMPTY_CELL:
             return True
         else:
             return False
 
-    def get_winner(self):                           #TODO make it check from bottom up
+    def get_winner(self):
         """
         :return:
         """
-        for i, row in enumerate(self.__board):
-            for j, cell in enumerate(row):
-                if cell == self.EMPTY_CELL:
-                    continue
-                cell_color = cell
-                for direction in self.DIRECTIONS:
-                    for k in range(1,4):
-                        next_cell = (i+k*direction[0], j+k*direction[1])
-                        if next_cell[0] not in range(0, self.BOARD_Y) or next_cell[1] not in range(0, self.BOARD_X):
-                            break
+        if self.__last_coord is None:
+            return None
 
-                        if self.__board[next_cell[0]][next_cell[1]] != cell_color:
-                            break
-                    else:
-                        self.__game_on = 0
-                        return cell_color, (i,j), direction           #TODO check returns
+        row, col = self.__last_coord
+        player = self.get_player_at(row, col)
+
+        for direction in self.DIRECTIONS:
+            for i in range(1,4):
+                next_cell = (row+i*direction[0], col+i*direction[1])
+                if next_cell not in self.__board.keys():
+                    break
+                if self.__board[next_cell] != player:
+                    break
+
+            else:
+                self.__game_on = 0
+                self.__win_direction = direction
+                return player
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
             self.__game_on = 0
-            return self.DRAW, (0,0), (0,0)                  #TODO this is ugly
+            return self.DRAW
 
     def print_board(self):
         for row in self.__board:
             print(row, '\n')
         print('*  '*20)
-
 
     def get_player_at(self, row, col):
         """
@@ -90,7 +93,7 @@ class Game:
         :param col:
         :return:
         """
-        return self.__board[row][col]
+        return self.__board[row,col]
 
     def get_current_player(self):
         """
@@ -101,8 +104,14 @@ class Game:
         else:
             return self.PLAYER_TWO
 
-    def get_board(self):
+    def get_coord(self):
         """
         :return:
         """
-        return self.__board
+        return self.__last_coord
+
+    def get_win_info(self):
+        """
+        :return:
+        """
+        return self.__last_coord, self.__win_direction
