@@ -114,3 +114,9 @@ class Game:
         :return:
         """
         return self.__last_coord, self.__win_direction
+
+    def end_game(self):
+        """
+        :return:
+        """
+        self.__game_on = 0

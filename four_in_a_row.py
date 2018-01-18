@@ -109,10 +109,10 @@ class FourInARow:
         :return:
         """
         win_info = self.__game.get_win_info()
-        if winner[0] == 2:
+        if winner == 2:
             self.print_to_gui('Draw')
         else:
-            self.print_to_gui('winner is '+str(winner[0]))
+            self.print_to_gui('winner is '+str(winner))
 
     def __handle_message(self, text=None):
         """
@@ -128,6 +128,7 @@ class FourInARow:
                 coord = self.__game.get_coord()
                 self.update_cell(coord)
             else:
+                self.__game.end_game()
                 self.end_game(text[3])
 
 
