@@ -30,19 +30,17 @@ class FourInARow:
             self.__color = Game.PLAYER_TWO
         else:
             self.__color = Game.PLAYER_ONE
-            
-        if self.__player == ARG_PLAYERS[1]:
-            print(self.__color)
-            self.__ai = AI(self.__color)
-            if self.__color == Game.PLAYER_ONE:
-                self.__ai.find_legal_move(self.__game, self.__game.make_move)
-                
+         
         self.__communicator = Communicator(self.__root, port, ip)
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.__handle_message)
 
         self.build_gui()
-
+        if self.__player == ARG_PLAYERS[1]:
+            self.__ai = AI(self.__color)
+            if self.__color == Game.PLAYER_ONE:
+                self.__ai.find_legal_move(self.__game, self.one_turn)
+        
     def build_gui(self):
         """
         :return:
@@ -136,11 +134,10 @@ class FourInARow:
                     coord = self.__game.get_coord()
                     self.update_cell(coord)
                 else:
-                    self.__ai.find_legal_move(self.__game, self.__game.make_move)
+                    self.__ai.find_legal_move(self.__game, self.one_turn)
             else:
                 self.__game.end_game()
                 self.end_game(text[3])
-
 
 def main(args):
     player = args[1]
