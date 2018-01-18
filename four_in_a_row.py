@@ -129,11 +129,10 @@ class FourInARow:
         """
         if text:
             if 'end' not in text:
-                if self.__player == ARG_PLAYERS[0]:
-                    self.__game.make_move(int(text))
-                    coord = self.__game.get_coord()
-                    self.update_cell(coord)
-                else:
+                self.__game.make_move(int(text))
+                coord = self.__game.get_coord()
+                self.update_cell(coord)
+                if self.__player == ARG_PLAYERS[1]:
                     self.__ai.find_legal_move(self.__game, self.one_turn)
             else:
                 self.__game.end_game()
