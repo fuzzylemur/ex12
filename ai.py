@@ -46,8 +46,9 @@ class AI:
         children = self.__cur_node.get_children()
         best_move = max(children.keys(), key=lambda k: children[k].get_data())
         self.__cur_node = children[best_move]
-        return best_move
-        
+        print('vvv')
+        func(best_move)
+
     def build_tree(self, g, root):
         """"""
         legal_moves = set([move for move in range(7) if not g.is_col_full(move)])
