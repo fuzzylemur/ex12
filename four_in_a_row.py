@@ -14,7 +14,7 @@ COLOR_TWO = 'red'
 
 class FourInARow:
 
-    NOT_YOUR_TURN_MSG = 'Not yout turn!'
+    NOT_YOUR_TURN_MSG = 'Not your turn!'
 
     def __init__(self, root, player, port, ip):
         """
@@ -124,7 +124,8 @@ class FourInARow:
         """
         if text:
             if 'end' not in text:
-                coord = self.__game.make_move(int(text))
+                self.__game.make_move(int(text))
+                coord = self.__game.get_coord()
                 self.update_cell(coord)
             else:
                 self.end_game(text[3])
