@@ -30,7 +30,6 @@ class AI:
     #PLAYER_ONE = Game.PLAYER_ONE
     #PLAYER_TWO = Game.PLAYER_TWO
 
-
     def __init__(self, player):
         self.__player = player
         self.__cur_node = Node()
@@ -38,7 +37,7 @@ class AI:
     def find_legal_move(self, g, func, timeout=None):
         """"""
         last_col = g.get_coord()
-        if last_col is not None:
+        if last_col is not None and self.__cur_node.get_children() != dict():
             children = self.__cur_node.get_children()
             self.__cur_node = children[last_col[1]]
 
@@ -46,7 +45,6 @@ class AI:
         children = self.__cur_node.get_children()
         best_move = max(children.keys(), key=lambda k: children[k].get_data())
         self.__cur_node = children[best_move]
-        print('vvv')
         func(best_move)
 
     def build_tree(self, g, root):
@@ -67,6 +65,7 @@ class AI:
             else:
                 node.set_data(-1)
                 
+            g.set_game_on()
             return node.get_data()
         else:
             chosen_col = sample(legal_moves, 1)[0]

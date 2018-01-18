@@ -73,12 +73,12 @@ class Game:
                     break
 
             else:
-                #self.__game_on = 0
+                self.__game_on = 0
                 self.__win_direction = direction
                 return player
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
-            #self.__game_on = 0
+            self.__game_on = 0
             return self.DRAW
 
     def print_board(self):
@@ -136,3 +136,7 @@ class Game:
                 self.__last_coord = last_move
                 self.__counter -= 1
                 break
+    
+    def set_game_on(self):
+        """"""
+        self.__game_on = 1
