@@ -102,7 +102,7 @@ class FourInARow:
 
         if winner is not None:
             self.end_game(winner)
-            self.__communicator.send_message('end'+str(winner[0]))
+            self.__communicator.send_message('end'+str(winner))
 
     def end_game(self, winner):
         """
