@@ -4,9 +4,8 @@ class Game:
     EMPTY_CELL = None
     PLAYER_ONE = 0
     PLAYER_TWO = 1
-    WIN_ONE = str(PLAYER_ONE)*4
-    WIN_TWO = str(PLAYER_TWO)*4
     DRAW = 2
+
     BOARD_X = 7
     BOARD_Y = 6
     ILLEGAL_MOVE_MSG = 'Illegal move'
