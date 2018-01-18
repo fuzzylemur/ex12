@@ -35,7 +35,7 @@ class FourInARow:
             print(self.__color)
             self.__ai = AI(self.__color)
             if self.__color == Game.PLAYER_ONE:
-                self.__ai.find_legal_move(self.game, self.game.make_move)
+                self.__ai.find_legal_move(self.__game, self.__game.make_move)
                 
         self.__communicator = Communicator(self.__root, port, ip)
         self.__communicator.connect()
@@ -136,7 +136,7 @@ class FourInARow:
                     coord = self.__game.get_coord()
                     self.update_cell(coord)
                 else:
-                    self.__ai.find_legal_move(self.game, self.game.make_move)
+                    self.__ai.find_legal_move(self.__game, self.__game.make_move)
             else:
                 self.__game.end_game()
                 self.end_game(text[3])
