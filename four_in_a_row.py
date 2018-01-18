@@ -27,15 +27,12 @@ class Gui():
         self.top.pack(side=tk.TOP)
 
         self.build_gui()
-        """
         self.__player = player
         self.__port = port
         self.__ip = ip
         self.__communicator = Communicator(root, port, ip)
         self.__communicator.connect()
-        self.__communicator.bind_action_to_message(self.make_move)"""
-
-
+        self.__communicator.bind_action_to_message(self.__handle_message)
 
     def build_gui(self):
 
@@ -44,21 +41,48 @@ class Gui():
         #self.button1.place(x=0, y=0)
 
 
-
     def update_tk(self, column):
         pass
 
-    def make_move(self, column):
+    def print_to_screen(self, msg):
+        pass
 
-        self.__game.make_move(column)
-        self.update_tk(column)
-        self.__communicator.send_message(column)
+    def __make_move(self, column):
+        try:
+            location = self.__game.make_move(column)
+            self.update_tk(location)
+        except:
+            self.print_to_screen(self.__screen.ILLEGAL_MOVE_MSG)
 
         winner = self.__game.get_winner()
         if winner is None:
-            pass
+            self.__communicator.send_message(column)
+        else:
+            self.end_game(winner)
+            self.__communicator.send_message(winner, True)
 
 
+
+    def __end_game(self):
+        """
+        :return:
+        """
+        pass
+
+    def __handle_message(self, text, end_game=False):
+        """
+        Specifies the event handler for the message getting event in the
+        communicator. Prints a message when invoked (and invoked by the
+        communicator when a message is received). The message will
+        automatically disappear after a fixed interval.
+        :param text: the text to be printed.
+        :return: None.
+        """
+        if not end_game:
+            self.__game.make_move(text)
+            self.update_tk(text)
+        else:
+            self.__end_game(text)
 
 def main(args):
     """
