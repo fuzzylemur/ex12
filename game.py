@@ -22,7 +22,7 @@ class Game:
                 self.__board[row,col] = self.EMPTY_CELL
 
         self.__counter = 0
-        self.__game_on = 1
+        self.__game_on = True
         self.__last_coord = None
         self.__win_direction = None
 
@@ -73,12 +73,12 @@ class Game:
                     break
 
             else:
-                self.__game_on = 0
+                self.set_game_off()
                 self.__win_direction = direction
                 return player
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
-            self.__game_on = 0
+            self.set_game_off()
             return self.DRAW
 
     def print_board(self):
@@ -105,7 +105,7 @@ class Game:
         else:
             return self.PLAYER_TWO
 
-    def get_coord(self):
+    def get_last_coord(self):
         """
         :return:
         """
@@ -120,13 +120,11 @@ class Game:
     def get_board(self):
         """"""
         return self.__board
-        
-    def end_game(self):
-        """
-        :return:
-        """
-        self.__game_on = 0
-    
+
+    def set_board(self, board):
+        """"""
+        self.__board = board
+
     def unmake_move(self, col, last_move):
         """"""
         for row in range(self.BOARD_X):
@@ -139,4 +137,10 @@ class Game:
     
     def set_game_on(self):
         """"""
-        self.__game_on = 1
+        self.__game_on = True
+
+    def set_game_off(self):
+        """
+        :return:
+        """
+        self.__game_on = False

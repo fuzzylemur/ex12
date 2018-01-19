@@ -36,7 +36,20 @@ class AI:
 
     def find_legal_move(self, g, func, timeout=None):
         """"""
-        last_col = g.get_coord()
+        for i in range(7):
+            try:
+                g.make_move(i)
+                if g.get_winner() == self.__player:
+                    g.unmake_move()
+                    func(i)
+                    return
+                else:
+                    g.unmake_move()
+
+            except:
+                continue
+
+        last_col = g.get_last_coord()
         if last_col is not None and self.__cur_node.get_children() != dict():
             children = self.__cur_node.get_children()
             self.__cur_node = children[last_col[1]]
@@ -47,41 +60,42 @@ class AI:
         self.__cur_node = children[best_move]
         func(best_move)
 
+
     def build_tree(self, g, root):
         """"""
         legal_moves = set([move for move in range(7) if not g.is_col_full(move)])
-        for i in range(3000):
-            self.build_branch(g, root, legal_moves, root.get_depth())
+        for i in range(1000):
+            self.build_branch(g, root, legal_moves, root.get_depth(), 42)
 
-    def build_branch(self, g, node, legal_moves, depth):
+    def build_branch(self, g, node, legal_moves, depth, x):
         """"""
         winner = g.get_winner()
         if winner is not None:
 
             if winner == self.__player:
-                node.set_data(1) 
+                node.set_data(1*x)
             elif winner == self.DRAW:
                 node.set_data(0)
             else:
-                node.set_data(-1)
+                node.set_data(-1*x)
                 
             g.set_game_on()
             return node.get_data()
         else:
             chosen_col = sample(legal_moves, 1)[0]
-            temp = g.get_coord()
+            temp = g.get_last_coord()
             g.make_move(chosen_col)
             if g.is_col_full(chosen_col):
                 legal_moves.remove(chosen_col)
 
             if chosen_col in node.get_children().keys():
                 next_node = node.get_children()[chosen_col]
-                result = self.build_branch(g, next_node, legal_moves, node.get_depth() + 1)
+                result = self.build_branch(g, next_node, legal_moves, node.get_depth() + 1, x-1)
                 node.set_data(result)
             else:
                 child = Node(0, node.get_depth()+1)
                 node.add_child(chosen_col, child)
-                result = self.build_branch(g, child, legal_moves, node.get_depth()+1)
+                result = self.build_branch(g, child, legal_moves, node.get_depth()+1, x-1)
                 node.set_data(result)
             #Undo all changes
             g.unmake_move(chosen_col, temp)

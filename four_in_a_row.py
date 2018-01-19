@@ -1,15 +1,14 @@
 import sys
+from copy import deepcopy
 from game import Game
 from communicator import Communicator
 from ai import AI
+from screen import Screen
 import tkinter as tk
-
 
 ARG_ERROR = "Illegal program arguments."
 ARG_PLAYERS = ['human', 'ai']
 ARG_PORT_MAX = 65535
-COLOR_ONE = 'blue'
-COLOR_TWO = 'red'
 
 
 class FourInARow:
@@ -23,7 +22,7 @@ class FourInARow:
         :param ip:
         """
         self.__game = Game()
-        self.__root = root
+        self.__screen = Screen(root, self.one_turn)
         self.__player = player
         
         if ip:
@@ -31,58 +30,36 @@ class FourInARow:
         else:
             self.__color = Game.PLAYER_ONE
          
-        self.__communicator = Communicator(self.__root, port, ip)
+        self.__communicator = Communicator(root, port, ip)
         self.__communicator.connect()
-        self.__communicator.bind_action_to_message(self.__handle_message)
+        self.__communicator.bind_action_to_message(self.handle_message)
 
-        self.build_gui()
         if self.__player == ARG_PLAYERS[1]:
             self.__ai = AI(self.__color)
+            self.__ai_next_move = None
             if self.__color == Game.PLAYER_ONE:
-                self.__ai.find_legal_move(self.__game, self.one_turn)
-        
-    def build_gui(self):
+                self.ai_turn()
+
+    def ai_turn(self):
         """
         :return:
         """
-        self.__canvas = tk.Canvas(self.__root, width=700, height=700, bg='black')
-        self.__canvas.pack()
+        cur_board = deepcopy(self.__game.get_board())
 
-        self.__circles = []
-        for j in range(Game.BOARD_Y):
-            temp_row = []
-            for i in range(Game.BOARD_X):
-                temp_row.append(self.__canvas.create_oval(5+100*i, 100*j+50, 100*i+95, 100*j+140, fill="white"))
-            self.__circles.append(temp_row)
+        self.__ai.find_legal_move(self.__game, self.ai_next_move)
 
-        for i in range(7):
-            temp_button = tk.Button(self.__canvas, text='button '+str(i), command=lambda col=i: self.one_turn(col))
-            temp_button.place(x=i*100, y=0)
+        self.__game.set_board(cur_board)
 
-        self.__msg_box = tk.Label(self.__canvas, text='Yo yo yo...', fg='red', bg='black')
-        self.__msg_box.place(x=10, y=670)
-
-    def update_cell(self, coordinate):
+    def ai_next_move(self, move):
         """
-        :param coordinate:
+        :param move:
         :return:
         """
-        row, col = coordinate
-        player = self.__game.get_player_at(row, col)
+        if move == -1:
+            self.one_turn(self.__ai_next_move)
 
-        if player == Game.PLAYER_ONE:
-            self.__canvas.itemconfig(self.__circles[row][col], fill=COLOR_ONE)
-
-        if player == Game.PLAYER_TWO:
-            self.__canvas.itemconfig(self.__circles[row][col], fill=COLOR_TWO)
-
-    def print_to_gui(self, msg):
-        """
-        :param msg:
-        :return:
-        """
-        self.__msg_box.config(text=msg)
-        self.__msg_box.place(x=10, y=670)
+        else:
+            self.__ai_next_move = move
 
     def one_turn(self, column):
         """
@@ -92,34 +69,36 @@ class FourInARow:
         if self.__game.get_current_player() == self.__color:
             try:
                 self.__game.make_move(column)
-                coord = self.__game.get_coord()
-                self.update_cell(coord)
+                coord = self.__game.get_last_coord()
+                self.__screen.update_cell(coord, self.__color)
                 self.__communicator.send_message(str(column))
 
             except:
-                self.print_to_gui(self.__game.ILLEGAL_MOVE_MSG)
+                self.__screen.print_to_gui(self.__game.ILLEGAL_MOVE_MSG)
         else:
-            self.print_to_gui(self.NOT_YOUR_TURN_MSG)
+            self.__screen.print_to_gui(self.NOT_YOUR_TURN_MSG)
             return
             
         winner = self.__game.get_winner()
-        self.print_to_gui('pressed ' + str(column) + '  last coord ' + str(self.__game.get_coord())+' winner '+str(winner))
+        self.__screen.print_to_gui('pressed ' + str(column) + '  last coord ' + str(self.__game.get_last_coord())+' winner '+str(winner))
 
         if winner is not None:
             self.end_game(winner)
-            self.__communicator.send_message('end'+str(winner))
+            self.__communicator.send_message(str(column)+'end')
 
     def end_game(self, winner):
         """
         :return:
         """
         win_info = self.__game.get_win_info()
-        if winner == 2:
-            self.print_to_gui('Draw')
-        else:
-            self.print_to_gui('winner is '+str(winner))
+        self.__game.set_game_off()
 
-    def __handle_message(self, text=None):
+        if winner == 2:
+            self.__screen.print_to_gui('Draw')
+        else:
+            self.__screen.print_to_gui('winner is '+str(winner))
+
+    def handle_message(self, text=None):
         """
         Specifies the event handler for the message getting event in the
         communicator. Prints a message when invoked (and invoked by the
@@ -128,15 +107,21 @@ class FourInARow:
         :return: None.
         """
         if text:
+
             if 'end' not in text:
+                player = self.__game.get_current_player()
                 self.__game.make_move(int(text))
-                coord = self.__game.get_coord()
-                self.update_cell(coord)
+                coord = self.__game.get_last_coord()
+                self.__screen.update_cell(coord, player)
+
                 if self.__player == ARG_PLAYERS[1]:
-                    self.__ai.find_legal_move(self.__game, self.one_turn)
+                    self.ai_turn()
+
             else:
-                self.__game.end_game()
-                self.end_game(text[3])
+                self.__game.make_move(int(text[0]))
+                winner = self.__game.get_winner()
+                self.end_game(winner)
+
 
 def main(args):
     player = args[1]
