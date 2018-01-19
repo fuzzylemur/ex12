@@ -31,7 +31,7 @@ class Game:
         :param column:
         :return:
         """
-        if column < 0 or column > 6 or self.is_col_full(column) or not self.__game_on:
+        if self.is_col_full(column) or not self.__game_on:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
         for row in range(self.BOARD_Y-1, -1, -1):
@@ -144,3 +144,11 @@ class Game:
         :return:
         """
         self.__game_on = False
+
+    def get_counter(self):
+        """"""
+        return self.__counter
+
+    def set_counter(self, value):
+        """"""
+        self.__counter = value

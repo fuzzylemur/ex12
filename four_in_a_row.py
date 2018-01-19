@@ -44,11 +44,14 @@ class FourInARow:
         """
         :return:
         """
-        cur_board = deepcopy(self.__game.get_board())
+        sim_game = Game()
+        cur_board = self.__game.get_board()
+        cur_counter = self.__game.get_counter()
 
-        self.__ai.find_legal_move(self.__game, self.ai_next_move)
+        sim_game.set_board(cur_board)
+        sim_game.set_counter(cur_counter)
 
-        self.__game.set_board(cur_board)
+        self.__ai.find_legal_move(sim_game, self.ai_next_move)
 
     def ai_next_move(self, move):
         """
