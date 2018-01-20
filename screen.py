@@ -1,5 +1,6 @@
 from game import Game
 import tkinter as tk
+from tkinter import font
 from PIL import Image, ImageTk
 
 
@@ -7,8 +8,13 @@ class Screen:
 
     CELL_ORI = (271.5, 255)
     BUT_ORI = (271, 165)
+    TXT1_ORI = (131, 570)
+    TXT2_ORI = (820, 570)
     OFF = (71.5, 65)
     DELAY = 50
+    WIN_DELAY = 85
+    FLASH_COUNT = 200
+
 
     def __init__(self, tk_root, button_func):
         """
@@ -57,8 +63,8 @@ class Screen:
         for i in range(Game.BOARD_Y):
             temp_row = []
             for j in range(Game.BOARD_X):
-                temp_label = tk.Label(self.__root, image=self.__blank,  bd=0)
-                temp_label.image = self.__blank
+                temp_label = tk.Label(self.__root, image=self.__coin1,  bd=0)
+                temp_label.image = self.__coin1
                 temp_label.place(x=self.CELL_ORI[0]+j*self.OFF[0], y=self.CELL_ORI[1]+i*self.OFF[1])
                 temp_row.append(temp_label)
             self.__cells.append(temp_row)
@@ -74,6 +80,14 @@ class Screen:
 
             temp_button.place(x=self.BUT_ORI[0]+i*self.OFF[0], y=self.BUT_ORI[1])
             self.__buttons.append(temp_button)
+
+        text_font = font.Font(family='Courier', size=13)
+
+        textbox1 = tk.Label(self.__root, text="PLAYER 1\ncomputer", font=text_font, bg='black', fg='green', justify=tk.CENTER)
+        textbox1.place(x=self.TXT1_ORI[0], y=self.TXT1_ORI[1])
+
+        textbox2 = tk.Label(self.__root, text="PLAYER 2\nyou", font=text_font, bg='black', fg='green', justify=tk.CENTER)
+        textbox2.place(x=self.TXT2_ORI[0], y=self.TXT2_ORI[1])
 
     def button_enter(self, event, col):
         """
@@ -123,6 +137,42 @@ class Screen:
         for i in range(row):
             self.__root.after(self.DELAY*(i+1), self.update_helper, i+1, col, player)
 
+    def win(self, coord, direction, winner):
+        """
+        :param coord:
+        :param direction:
+        :return:
+        """
+        row, col = coord
+        dir_row, dir_col = direction
+
+        if winner == Game.PLAYER_ONE:
+            win_coin = self.__coin1
+
+        if winner == Game.PLAYER_TWO:
+            win_coin = self.__coin2
+
+        win_list = []
+        for i in range(4):
+            win_list.append(self.__cells[row+i*dir_row][col+i*dir_col])
+
+        for i in range(self.FLASH_COUNT):
+            self.__root.after(i*self.WIN_DELAY, self.win_helper, win_list, i, win_coin)
+
+
+    def win_helper(self, win_list, index, win_coin):
+        """
+        :param index:
+        :return:
+        """
+        if index < self.FLASH_COUNT-1:
+            win_list[index%4].image = self.__blank
+            win_list[index%4].configure(image=self.__blank)
+
+        win_list[(index-1)%4].image = win_coin
+        win_list[(index-1)%4].configure(image=win_coin)
+
+
     def print_to_gui(self, msg):
         """
         :param msg:
@@ -130,11 +180,12 @@ class Screen:
         """
         pass
 
-"""
-def func():
+
+def func(x):
     pass
 
 root = tk.Tk()
-screen = Screen(root, func, 0)
-root.mainloop()"""
+screen = Screen(root, func)
+screen.win((0,0),(1,0),1)
+root.mainloop()
 
