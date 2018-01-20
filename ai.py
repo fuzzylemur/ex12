@@ -60,9 +60,8 @@ class AI:
             if last_col is not None and self.__cur_node.get_children() != dict():
                 children = self.__cur_node.get_children()
                 self.__cur_node = children[last_col[1]]
-
+            # Build tree and improve current decision
             self.build_tree(g, self.__cur_node)
-
 
         finally:
             # Update the cur node and returns the best move we found so far
