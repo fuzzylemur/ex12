@@ -79,7 +79,7 @@ class AI:
         for i in range(2000): # Can be while true / according to timeout
             self.build_branch(g, root, legal_moves, root.get_depth(), 42)
             # Save the best choice every 20 branches
-            if i % 20 == 0: # ask Gil about when the exact number
+            if i % 20 == 0: # ask Gil about the exact number
                 children = self.__cur_node.get_children()
                 best_move = self.set_next_best_move(children)
 
