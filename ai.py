@@ -65,8 +65,8 @@ class AI:
 
 
         finally:
+            # Update the cur node and returns the best move we found so far
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]
-            #returns the best move we found so far
             func(self.__next_move)
     
     def set_next_best_move(self, children):
@@ -77,10 +77,10 @@ class AI:
     def build_tree(self, g, root):
         """"""
         legal_moves = set([move for move in range(7) if not g.is_col_full(move)])
-        for i in range(2000):
+        for i in range(2000): # Can be while true / according to timeout
             self.build_branch(g, root, legal_moves, root.get_depth(), 42)
             # Save the best choice every 20 branches
-            if i % 20 == 0:
+            if i % 20 == 0: # ask Gil about when the exact number
                 children = self.__cur_node.get_children()
                 best_move = self.set_next_best_move(children)
 
