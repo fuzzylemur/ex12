@@ -1,5 +1,4 @@
 import sys
-from copy import deepcopy
 from game import Game
 from communicator import Communicator
 from ai import AI
@@ -40,6 +39,8 @@ class FourInARow:
             if self.__color == Game.PLAYER_ONE:
                 self.ai_turn()
 
+        self.__screen = Screen(root, self.one_turn)
+
     def ai_turn(self):
         """
         :return:
@@ -72,8 +73,8 @@ class FourInARow:
         if self.__game.get_current_player() == self.__color:
             try:
                 self.__game.make_move(column)
-                coord = self.__game.get_last_coord()
-                self.__screen.update_cell(coord, self.__color)
+                row, col = self.__game.get_last_coord()
+                self.__screen.update_cell(row, col, self.__color)
                 self.__communicator.send_message(str(column))
 
             except:
