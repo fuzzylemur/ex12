@@ -153,7 +153,7 @@ class Screen:
             win_coin = self.__coin2
 
         cell_list = []
-        for i in range(4):
+        for i in range(Game.WIN_LEN):
             cell_list.append(self.__cells[row+i*dir_row][col+i*dir_col])
 
         for i in range(self.FLASH_COUNT):
@@ -166,11 +166,11 @@ class Screen:
         :return:
         """
         if index < self.FLASH_COUNT-1:
-            cell_list[index%4].image = self.__blank
-            cell_list[index%4].configure(image=self.__blank)
+            cell_list[index%Game.WIN_LEN].image = self.__blank
+            cell_list[index%Game.WIN_LEN].configure(image=self.__blank)
 
-        cell_list[(index-1)%4].image = win_coin
-        cell_list[(index-1)%4].configure(image=win_coin)
+        cell_list[(index-1)%Game.WIN_LEN].image = win_coin
+        cell_list[(index-1)%Game.WIN_LEN].configure(image=win_coin)
 
 
     def print_to_gui(self, msg):

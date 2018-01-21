@@ -50,7 +50,7 @@ class FourInARow:
         sim_game = Game()
         sim_game.set_board(self.__game.get_board())
         sim_game.set_counter(self.__game.get_counter())
-        sim_game.set_cell_set(self.__game.get_cell_set())
+        sim_game.set_cell_set(self.__game.get_cell_set().copy)          #copy deepcopy?
 
         self.__ai.find_legal_move(sim_game, self.ai_next_move)
 
@@ -94,7 +94,8 @@ class FourInARow:
         """
         :return:
         """
-        win_info = self.__game.get_win_info()
+        win_coord, win_dir = self.__game.get_win_info()
+        self.__screen.win(win_coord, win_dir, winner)
 
         if winner == 2:
             self.__screen.print_to_gui('Draw')
@@ -114,8 +115,8 @@ class FourInARow:
             if 'end' not in text:
                 player = self.__game.get_current_player()
                 self.__game.make_move(int(text))
-                coord = self.__game.get_last_coord()
-                self.__screen.update_cell(coord, player)
+                row, col = self.__game.get_last_coord()
+                self.__screen.update_cell(row, col, player)
 
                 if self.__player == ARG_PLAYERS[1]:
                     self.ai_turn()
