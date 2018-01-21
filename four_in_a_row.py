@@ -21,6 +21,8 @@ class FourInARow:
         :param ip:
         """
         self.__game = Game()
+        self.__game.new_board()
+
         self.__screen = Screen(root, self.one_turn)
         self.__player = player
         
@@ -46,11 +48,9 @@ class FourInARow:
         :return:
         """
         sim_game = Game()
-        cur_board = self.__game.get_board()
-        cur_counter = self.__game.get_counter()
-
-        sim_game.set_board(cur_board)
-        sim_game.set_counter(cur_counter)
+        sim_game.set_board(self.__game.get_board())
+        sim_game.set_counter(self.__game.get_counter())
+        sim_game.set_cell_set(self.__game.get_cell_set())
 
         self.__ai.find_legal_move(sim_game, self.ai_next_move)
 

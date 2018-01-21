@@ -8,6 +8,7 @@ class Game:
 
     BOARD_X = 7
     BOARD_Y = 6
+    WIN_LEN = 4
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
     DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1]]       # removed UP direction. problems?
@@ -17,14 +18,21 @@ class Game:
 
         """
         self.__board = {}
-        for row in range(self.BOARD_Y):
-            for col in range(self.BOARD_X):
-                self.__board[row,col] = self.EMPTY_CELL
-
-        self.__cells = self.__board.keys()
+        self.__cell_set = None
         self.__counter = 0
         self.__last_coord = None
         self.__win = None
+
+    def new_board(self):
+        """
+        :return:
+        """
+        self.__board = {}
+        for row in range(self.BOARD_Y):
+            for col in range(self.BOARD_X):
+                self.__board[row, col] = self.EMPTY_CELL
+
+        self.__cell_set = set(self.__board.keys())
 
     def make_move(self, column):
         """
@@ -41,8 +49,6 @@ class Game:
                 self.__last_coord = coord
                 self.__counter += 1
                 break
-
-        #self.print_board()
 
     def is_col_full(self, column):
         """
@@ -65,9 +71,9 @@ class Game:
         player = self.get_player_at(row, col)
 
         for direction in self.DIRECTIONS:
-            for i in range(1,4):
+            for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])
-                if next_cell not in self.__cells:
+                if next_cell not in self.__cell_set:
                     break
                 if self.__board[next_cell] != player:
                     break
@@ -83,8 +89,8 @@ class Game:
     def print_board(self):
         """"""
         for i in range(6):
-            for j in range (7):
-                print(self.__board[(i,j)], end=' ')
+            for j in range(7):
+                print(self.__board[(i, j)], end=' ')
             print('\n')
 
     def get_player_at(self, row, col):
@@ -93,7 +99,7 @@ class Game:
         :param col:
         :return:
         """
-        return self.__board[row,col]
+        return self.__board[row, col]
 
     def get_current_player(self):
         """
@@ -145,3 +151,11 @@ class Game:
     def set_counter(self, value):
         """"""
         self.__counter = value
+
+    def get_cell_set(self):
+        """"""
+        return self.__cell_set
+
+    def set_cell_set(self, set):
+        """"""
+        self.__cell_set = set

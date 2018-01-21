@@ -152,25 +152,25 @@ class Screen:
         if winner == Game.PLAYER_TWO:
             win_coin = self.__coin2
 
-        win_list = []
+        cell_list = []
         for i in range(4):
-            win_list.append(self.__cells[row+i*dir_row][col+i*dir_col])
+            cell_list.append(self.__cells[row+i*dir_row][col+i*dir_col])
 
         for i in range(self.FLASH_COUNT):
-            self.__root.after(i*self.WIN_DELAY, self.win_helper, win_list, i, win_coin)
+            self.__root.after(i*self.WIN_DELAY, self.win_helper, cell_list, i, win_coin)
 
 
-    def win_helper(self, win_list, index, win_coin):
+    def win_helper(self, cell_list, index, win_coin):
         """
         :param index:
         :return:
         """
         if index < self.FLASH_COUNT-1:
-            win_list[index%4].image = self.__blank
-            win_list[index%4].configure(image=self.__blank)
+            cell_list[index%4].image = self.__blank
+            cell_list[index%4].configure(image=self.__blank)
 
-        win_list[(index-1)%4].image = win_coin
-        win_list[(index-1)%4].configure(image=win_coin)
+        cell_list[(index-1)%4].image = win_coin
+        cell_list[(index-1)%4].configure(image=win_coin)
 
 
     def print_to_gui(self, msg):
