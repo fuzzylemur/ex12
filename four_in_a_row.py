@@ -48,9 +48,9 @@ class FourInARow:
         :return:
         """
         sim_game = Game()
-        sim_game.set_board(self.__game.get_board().copy)
+        sim_game.set_board(self.__game.get_board())
         sim_game.set_counter(self.__game.get_counter())
-        sim_game.set_cell_set(self.__game.get_cell_set().copy)          #copy deepcopy?
+        sim_game.set_cell_set(self.__game.get_cell_set())          #copy deepcopy?
 
         self.__ai.find_legal_move(sim_game, self.one_turn)
 

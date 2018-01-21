@@ -117,6 +117,7 @@ class Screen:
         """
         :return:
         """
+
         if row > 0:
             self.__cells[row-1][col].image = self.__blank
             self.__cells[row-1][col].configure(image=self.__blank)
@@ -131,6 +132,7 @@ class Screen:
         :param player:
         :return:
         """
+
         coin = self.__coin1
         if player == Game.PLAYER_TWO:
             coin = self.__coin2

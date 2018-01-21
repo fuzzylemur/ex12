@@ -66,6 +66,7 @@ class AI:
         finally:
             # Update the cur node and returns the best move we found so far
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]
+            print('move is '+str(self.__next_move))
             func(self.__next_move)
     
     def set_next_best_move(self, children):
