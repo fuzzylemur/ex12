@@ -10,7 +10,7 @@ class Game:
     BOARD_Y = 6
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
-    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]
+    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1]]       # removed UP direction. problems?
 
     def __init__(self):
         """
@@ -21,17 +21,17 @@ class Game:
             for col in range(self.BOARD_X):
                 self.__board[row,col] = self.EMPTY_CELL
 
+        self.__cells = self.__board.keys()
         self.__counter = 0
-        self.__game_on = True
         self.__last_coord = None
-        self.__win_direction = None
+        self.__win = None
 
     def make_move(self, column):
         """
         :param column:
         :return:
         """
-        if self.is_col_full(column) or not self.__game_on:
+        if self.is_col_full(column) or self.__win:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
         for row in range(self.BOARD_Y-1, -1, -1):
@@ -67,18 +67,17 @@ class Game:
         for direction in self.DIRECTIONS:
             for i in range(1,4):
                 next_cell = (row+i*direction[0], col+i*direction[1])
-                if next_cell not in self.__board.keys():
+                if next_cell not in self.__cells:
                     break
                 if self.__board[next_cell] != player:
                     break
 
             else:
-                self.set_game_off()
-                self.__win_direction = direction
+                self.__win = direction
                 return player
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
-            self.set_game_off()
+            self.__win = self.DRAW
             return self.DRAW
 
     def print_board(self):
@@ -115,7 +114,7 @@ class Game:
         """
         :return:
         """
-        return self.__last_coord, self.__win_direction
+        return self.__last_coord, self.__win
 
     def get_board(self):
         """"""
@@ -137,13 +136,7 @@ class Game:
     
     def set_game_on(self):
         """"""
-        self.__game_on = True
-
-    def set_game_off(self):
-        """
-        :return:
-        """
-        self.__game_on = False
+        self.__win = None
 
     def get_counter(self):
         """"""

@@ -57,6 +57,8 @@ class Screen:
         :return:
         """
         self.__root.resizable(width=False, height=False)
+        self.__text_font = font.Font(family='Courier', size=13)
+
 
         label_bg = tk.Label(self.__root, image=self.__bg, bd=0)
         label_bg.image = self.__bg
@@ -83,12 +85,10 @@ class Screen:
             temp_button.place(x=self.BUT_ORI[0]+i*self.OFF[0], y=self.BUT_ORI[1])
             self.__buttons.append(temp_button)
 
-        text_font = font.Font(family='Courier', size=13)
-
-        textbox1 = tk.Label(self.__root, text="PLAYER 1\ncomputer", font=text_font, bg='black', fg='green', justify=tk.CENTER)
+        textbox1 = tk.Label(self.__root, text="PLAYER 1\ncomputer", font=self.__text_font, bg='black', fg='green', justify=tk.CENTER)
         textbox1.place(x=self.TXT1_ORI[0], y=self.TXT1_ORI[1])
 
-        textbox2 = tk.Label(self.__root, text="PLAYER 2\nyou", font=text_font, bg='black', fg='green', justify=tk.CENTER)
+        textbox2 = tk.Label(self.__root, text="PLAYER 2\nyou", font=self.__text_font, bg='black', fg='green', justify=tk.CENTER)
         textbox2.place(x=self.TXT2_ORI[0], y=self.TXT2_ORI[1])
 
     def button_enter(self, event, col):
@@ -113,7 +113,7 @@ class Screen:
         self.__buttons[col].configure(image=self.__but2)
         self.__func(col)
 
-    def update_helper(self, row, col, player):
+    def update_helper(self, row, col, coin):
         """
         :return:
         """
@@ -121,23 +121,23 @@ class Screen:
             self.__cells[row-1][col].image = self.__blank
             self.__cells[row-1][col].configure(image=self.__blank)
 
-        if player == Game.PLAYER_ONE:
-            self.__cells[row][col].image = self.__coin1
-            self.__cells[row][col].configure(image=self.__coin1)
-
-        if player == Game.PLAYER_TWO:
-            self.__cells[row][col].image = self.__coin2
-            self.__cells[row][col].configure(image=self.__coin2)
+        self.__cells[row][col].image = coin
+        self.__cells[row][col].configure(image=coin)
 
     def update_cell(self, row, col, player):
         """
-        :param coordinate:
+        :param row:
+        :param col:
+        :param player:
         :return:
         """
+        coin = self.__coin1
+        if player == Game.PLAYER_TWO:
+            coin = self.__coin2
 
-        self.update_helper(0, col, player)
+        self.update_helper(0, col, coin)
         for i in range(row):
-            self.__root.after(self.DELAY*(i+1), self.update_helper, i+1, col, player)
+            self.__root.after(self.DELAY*(i+1), self.update_helper, i+1, col, coin)
 
     def win(self, coord, direction, winner):
         """
@@ -148,9 +148,7 @@ class Screen:
         row, col = coord
         dir_row, dir_col = direction
 
-        if winner == Game.PLAYER_ONE:
-            win_coin = self.__coin1
-
+        win_coin = self.__coin1
         if winner == Game.PLAYER_TWO:
             win_coin = self.__coin2
 

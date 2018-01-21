@@ -95,7 +95,6 @@ class FourInARow:
         :return:
         """
         win_info = self.__game.get_win_info()
-        self.__game.set_game_off()
 
         if winner == 2:
             self.__screen.print_to_gui('Draw')
