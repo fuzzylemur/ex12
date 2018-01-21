@@ -13,7 +13,7 @@ class Screen:
     OFF = (71.5, 65)
     DELAY = 50
     WIN_DELAY = 85
-    FLASH_COUNT = 200
+    FLASH_COUNT = 1000
 
 
     def __init__(self, tk_root, button_func):
@@ -184,10 +184,10 @@ class Screen:
 def func(x):
     pass
 
-"""
+
 root = tk.Tk()
 screen = Screen(root, func)
 screen.win((0,0),(1,0),1)
 root.mainloop()
-"""
+
 
