@@ -66,7 +66,7 @@ class AI:
     def build_tree(self, g, root):
         """"""
         legal_moves = set([move for move in range(7) if not g.is_col_full(move)])
-        for i in range(2000): # Can be while true / according to timeout
+        for i in range(1000): # Can be while true / according to timeout
             self.build_branch(g, root, legal_moves)
             # Save the best choice every 20 branches
             if i % 20 == 0: # ask Gil about the exact number
