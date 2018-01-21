@@ -78,23 +78,23 @@ class AI:
         """"""
         legal_moves = set([move for move in range(7) if not g.is_col_full(move)])
         for i in range(2000): # Can be while true / according to timeout
-            self.build_branch(g, root, legal_moves, root.get_depth(), 42)
+            self.build_branch(g, root, legal_moves)
             # Save the best choice every 20 branches
             if i % 20 == 0: # ask Gil about the exact number
                 children = self.__cur_node.get_children()
                 self.set_next_best_move(children)
 
-    def build_branch(self, g, node, legal_moves, depth, x):
+    def build_branch(self, g, node, legal_moves):
         """"""
         winner = g.get_winner()
         if winner is not None:
 
             if winner == self.__player:
-                node.set_data(1*x)
+                node.set_data(1)
             elif winner == self.DRAW:
                 node.set_data(0)
             else:
-                node.set_data(-1*x)
+                node.set_data(-1)
                 
             g.set_game_on()
             return node.get_data()
@@ -107,13 +107,13 @@ class AI:
 
             if chosen_col in node.get_children().keys():
                 next_node = node.get_children()[chosen_col]
-                result = self.build_branch(g, next_node, legal_moves, node.get_depth() + 1, x-1)
-                node.set_data(result)
+                result = self.build_branch(g, next_node, legal_moves)
+                node.set_data(result/2)
             else:
                 child = Node(0, node.get_depth()+1)
                 node.add_child(chosen_col, child)
-                result = self.build_branch(g, child, legal_moves, node.get_depth()+1, x-1)
-                node.set_data(result)
+                result = self.build_branch(g, child, legal_moves)
+                node.set_data(result/2)
             #Undo all changes
             g.unmake_move(chosen_col, temp)
             legal_moves.add(chosen_col)

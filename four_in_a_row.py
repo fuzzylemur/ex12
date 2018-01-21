@@ -37,7 +37,6 @@ class FourInARow:
 
         if self.__player == ARG_PLAYERS[1]:
             self.__ai = AI(self.__color)
-            self.__ai_next_move = None
             if self.__color == Game.PLAYER_ONE:
                 self.ai_turn()
 
@@ -73,6 +72,7 @@ class FourInARow:
         if self.__game.get_current_player() == self.__color:
             try:
                 self.__game.make_move(column)
+                #print(self.__game.print_board())
                 row, col = self.__game.get_last_coord()
                 self.__screen.update_cell(row, col, self.__color)
                 self.__communicator.send_message(str(column))
