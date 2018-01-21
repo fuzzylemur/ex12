@@ -51,7 +51,7 @@ class AI:
                 g.make_move(i)
                 if g.get_winner() == self.__player:
                     g.unmake_move(i, temp)
-                    best_final_move = i
+                    self.__next_move = i
                     return
                 else:
                     g.unmake_move(i, temp)
@@ -81,7 +81,7 @@ class AI:
             # Save the best choice every 20 branches
             if i % 20 == 0: # ask Gil about the exact number
                 children = self.__cur_node.get_children()
-                best_move = self.set_next_best_move(children)
+                self.set_next_best_move(children)
 
     def build_branch(self, g, node, legal_moves, depth, x):
         """"""

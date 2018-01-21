@@ -184,10 +184,10 @@ class Screen:
 def func(x):
     pass
 
-
+"""
 root = tk.Tk()
 screen = Screen(root, func)
 screen.win((0,0),(1,0),1)
 root.mainloop()
-
+"""
 
