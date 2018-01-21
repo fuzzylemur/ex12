@@ -45,17 +45,6 @@ class AI:
         self.__next_move = sample(legal_moves, 1)[0]
 
         try:
-            # look for a winning move(depth 1)
-            for i in legal_moves:
-                temp = g.get_last_coord()
-                g.make_move(i)
-                if g.get_winner() == self.__player:
-                    g.unmake_move(i, temp)
-                    self.__next_move = i
-                    return
-                else:
-                    g.unmake_move(i, temp)
-
             last_col = g.get_last_coord()
             if last_col is not None and self.__cur_node.get_children() != dict():
                 children = self.__cur_node.get_children()

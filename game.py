@@ -11,7 +11,7 @@ class Game:
     WIN_LEN = 4
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
-    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1]]       # removed UP direction. problems?
+    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]       # removed UP direction. problems?
 
     def __init__(self):
         """
@@ -39,6 +39,7 @@ class Game:
         :param column:
         :return:
         """
+        pl = self.get_current_player()
         if self.is_col_full(column) or self.__win:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
@@ -49,6 +50,8 @@ class Game:
                 self.__last_coord = coord
                 self.__counter += 1
                 break
+
+        print('made move on col '+str(column)+' last_coord: '+str(self.__last_coord)+' player: '+str(pl)+' counter: '+str(self.__counter))
 
     def is_col_full(self, column):
         """
@@ -74,16 +77,20 @@ class Game:
             for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])
                 if next_cell not in self.__cell_set:
+                    print('no win, not in range')
                     break
                 if self.__board[next_cell] != player:
+                    print('no win, no four in row')
                     break
 
             else:
+                print('win! win dir: '+str(direction))
                 self.__win = direction
                 return player
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
             self.__win = self.DRAW
+            print('no win, draw')
             return self.DRAW
 
     def print_board(self):
