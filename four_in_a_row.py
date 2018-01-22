@@ -106,7 +106,8 @@ class FourInARow:
         if text:
             self.one_turn(int(text[0]), self.__op_color)
             if self.__player == ARG_PLAYERS[1]:
-                self.ai_find_move()
+                if self.__game.get_win_info()[1] is None:
+                    self.ai_find_move()
 
 def main(args):
     player = args[1]

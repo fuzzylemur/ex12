@@ -44,8 +44,8 @@ class AI:
         """"""
         # Saves random move as our move 
         # and then improves it until the timeout
-        legal_moves = self.find_legal_moves(g)
-        self.__next_move = sample(legal_moves, 1)[0]
+        possible_moves = self.possible_moves(g)
+        self.__next_move = sample(possible_moves, 1)[0]
 
         try:
             last_col = g.get_last_coord()
@@ -53,7 +53,7 @@ class AI:
                 children = self.__cur_node.get_children()
                 self.__cur_node = children[last_col[1]]
             # Build tree and improve current decision
-            self.build_tree(g, self.__cur_node, legal_moves)
+            self.build_tree(g, self.__cur_node, possible_moves)
 
         finally:
             # Update the cur node and returns the best move we found so far
@@ -61,18 +61,18 @@ class AI:
             
             func(self.__next_move)
             
-    def find_legal_moves(self, g):
+    def possible_moves(self, g):
         """Finds all current possible moves and
         deletes illegal moves from the current_node
         children"""
-        legal_moves = set()
+        possible_moves = set()
         for move in range(7):
             if not g.is_col_full(move):
-                legal_moves.add(move)
+                possible_moves.add(move)
             else:
                 self.__cur_node.remove_child(move)
                 
-        return legal_moves
+        return possible_moves
         
     def set_next_best_move(self, children, legal_moves):
         """"""
