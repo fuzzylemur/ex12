@@ -39,7 +39,6 @@ class Game:
         :param column:
         :return:
         """
-        pl = self.get_current_player()
         if self.is_col_full(column) or self.__win:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
@@ -48,7 +47,7 @@ class Game:
             if self.__board[coord] == self.EMPTY_CELL:
                 self.__board[coord] = self.get_current_player()
                 self.__last_coord = coord
-                
+                self.__counter += 1
                 break
 
         #print('made move on col '+str(column)+' last_coord: '+str(self.__last_coord)+' player: '+str(pl)+' counter: '+str(self.__counter))
@@ -122,6 +121,12 @@ class Game:
         """
         return self.__last_coord
 
+    def set_last_coord(self, coord):
+        """
+        :return:
+        """
+        self.__last_coord = coord
+
     def get_win_info(self):
         """
         :return:
@@ -169,3 +174,9 @@ class Game:
     def set_cell_set(self, set):
         """"""
         self.__cell_set = set
+
+    def sim(self):
+        self.__board[5,2] = 0
+        self.__board[5,3] = 0
+        self.__board[5,4] = 0
+        self.set_counter(4)

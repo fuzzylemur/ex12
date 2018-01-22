@@ -117,7 +117,6 @@ class Screen:
         """
         :return:
         """
-
         if row > 0:
             self.__cells[row-1][col].image = self.__blank
             self.__cells[row-1][col].configure(image=self.__blank)
