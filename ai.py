@@ -110,21 +110,21 @@ class AI:
             g.make_move(chosen_col)
             if g.is_col_full(chosen_col):
                 legal_moves.remove(chosen_col)
-                
+
             if chosen_col in node.get_children().keys():
                 next_node = node.get_children()[chosen_col]
                 result = self.build_branch(g, next_node, legal_moves)
-                node.set_data(result/2)
+                node.set_data(result)
             else:
                 child = Node(0, node.get_depth()+1)
                 node.add_child(chosen_col, child)
                 result = self.build_branch(g, child, legal_moves)
-                node.set_data(result/2)
+                node.set_data(result)
             #Undo all changes
             g.unmake_move(chosen_col, temp)
             legal_moves.add(chosen_col)
 
-        return result
+        return result/2
 
 if __name__ == "__main__":
 

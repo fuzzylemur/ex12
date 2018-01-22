@@ -147,6 +147,9 @@ class Screen:
         :param direction:
         :return:
         """
+        if winner == Game.DRAW:
+            #Prin_to_screen
+            return
         row, col = coord
         dir_row, dir_col = direction
 

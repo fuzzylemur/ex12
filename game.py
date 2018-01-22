@@ -48,10 +48,10 @@ class Game:
             if self.__board[coord] == self.EMPTY_CELL:
                 self.__board[coord] = self.get_current_player()
                 self.__last_coord = coord
-                self.__counter += 1
+                
                 break
 
-        print('made move on col '+str(column)+' last_coord: '+str(self.__last_coord)+' player: '+str(pl)+' counter: '+str(self.__counter))
+        #print('made move on col '+str(column)+' last_coord: '+str(self.__last_coord)+' player: '+str(pl)+' counter: '+str(self.__counter))
 
     def is_col_full(self, column):
         """
@@ -77,27 +77,26 @@ class Game:
             for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])
                 if next_cell not in self.__cell_set:
-                    print('no win, not in range')
                     break
                 if self.__board[next_cell] != player:
-                    print('no win, no four in row')
                     break
 
             else:
-                print('win! win dir: '+str(direction))
                 self.__win = direction
                 return player
 
         if self.__counter == self.BOARD_X*self.BOARD_Y:
             self.__win = self.DRAW
-            print('no win, draw')
             return self.DRAW
 
     def print_board(self):
         """"""
         for i in range(6):
             for j in range(7):
-                print(self.__board[(i, j)], end=' ')
+                if self.__board[(i, j)] is None:
+                    print('_', end='')
+                else:
+                    print(self.__board[(i, j)], end='')
             print('\n')
 
     def get_player_at(self, row, col):
@@ -159,6 +158,10 @@ class Game:
         """"""
         self.__counter = value
 
+    def counter_plus_1(self):
+        """"""
+        self.__counter += 1
+        
     def get_cell_set(self):
         """"""
         return self.__cell_set

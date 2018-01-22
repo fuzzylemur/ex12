@@ -21,7 +21,7 @@ class FourInARow:
         :param ip:
         """
         self.__game = Game()
-        self.__game.new_board()
+        self.__game.new_board() #Can't the game init the board?
 
         self.__screen = Screen(root, self.one_turn)
         self.__player = player
@@ -40,8 +40,6 @@ class FourInARow:
             if self.__color == Game.PLAYER_ONE:
                 self.ai_turn()
 
-        self.__screen = Screen(root, self.one_turn)
-
     def ai_turn(self):
         """
         :return:
@@ -53,17 +51,9 @@ class FourInARow:
 
         self.__ai.find_legal_move(sim_game, self.one_turn)
 
-    def ai_next_move(self, move):
-        """
-        :param move:
-        :return:
-        """
-        if move == -1:
-            self.one_turn(self.__ai_next_move)
-
-        else:
-            self.__ai_next_move = move
-
+    def get_ai_move(self):
+        """"""
+        
     def one_turn(self, column):
         """
         :param column:
@@ -72,8 +62,11 @@ class FourInARow:
         if self.__game.get_current_player() == self.__color:
             try:
                 self.__game.make_move(column)
-                #print(self.__game.print_board())
+                print('************************')
+                self.__game.print_board()
                 row, col = self.__game.get_last_coord()
+                print(row, col, 'row, col')
+                #self.__communicator.send_message(str(column))
                 self.__screen.update_cell(row, col, self.__color)
                 self.__communicator.send_message(str(column))
 
@@ -88,7 +81,7 @@ class FourInARow:
 
         if winner is not None:
             self.end_game(winner)
-            self.__communicator.send_message(str(column)+'end')
+            #self.__communicator.send_message(str(column))
 
     def end_game(self, winner):
         """
@@ -110,22 +103,13 @@ class FourInARow:
         :param text: the text to be printed.
         :return: None.
         """
+        print(text,'text')
         if text:
 
-            if 'end' not in text:
-                player = self.__game.get_current_player()
-                self.__game.make_move(int(text))
-                row, col = self.__game.get_last_coord()
-                self.__screen.update_cell(row, col, player)
-
-                if self.__player == ARG_PLAYERS[1]:
-                    self.ai_turn()
-
-            else:
-                self.__game.make_move(int(text[0]))
-                winner = self.__game.get_winner()
-                self.end_game(winner)
-
+            self.one_turn(int(text[0]))
+            if self.__player == ARG_PLAYERS[1]:
+                #self.__game.counter_plus_1()
+                self.ai_turn()
 
 def main(args):
     player = args[1]
