@@ -64,11 +64,13 @@ class AI:
 
         finally:
             # Update the cur node and returns the best move we found so far
+            print('*********** move number ',g.get_counter(),'***********')
+            print('register: ', g.get_register())
             for i, node in self.__cur_node.get_children().items():
                 print('col: ',i,'  data: ',node.get_data())
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]
             func(self.__next_move)
-            
+
     def possible_moves(self, g):
         """Finds all current possible moves and
         deletes illegal moves from the current_node
@@ -78,8 +80,7 @@ class AI:
         for move in range(Game.BOARD_X):
             if not g.is_col_full(move):
                 possible_moves.add(move)
-            #else:                                              # not needed
-             #   self.__cur_node.remove_child(move)
+
         return possible_moves
         
     def set_next_best_move(self, children):
@@ -113,24 +114,30 @@ class AI:
             return node.get_data()
 
         else:
-            chosen_col = sample(legal_moves, 1)[0]
+
+            new_moves = self.possible_moves(g)
+            for col in list(node.get_children().keys())[:]:
+                if col not in new_moves:
+                    node.remove_child(col)
+
+            chosen_col = sample(new_moves, 1)[0]
             temp = g.get_last_coord()
             g.make_move(chosen_col)
-            if g.is_col_full(chosen_col):
-                legal_moves.remove(chosen_col)
 
             if chosen_col in node.get_children().keys():
                 next_node = node.get_children()[chosen_col]
-                result = self.build_branch(g, next_node, legal_moves)
+                result = self.build_branch(g, next_node, new_moves)
                 node.set_data(result)
             else:
                 child = Node(0, node.get_depth()+1)
                 node.add_child(chosen_col, child)
-                result = self.build_branch(g, child, legal_moves)
+                result = self.build_branch(g, child, new_moves)
                 node.set_data(result)
+
             #Undo all changes
+            #if not g.is_col_full(chosen_col):
+             #   new_moves.add(chosen_col)
             g.unmake_move(chosen_col, temp)
-            legal_moves.add(chosen_col)
 
         return result/2
 
@@ -140,4 +147,4 @@ if __name__ == "__main__":
     g = Game()
     g.sim()
 
-    print(ai.find_legal_move(g,lambda x:x))
+    ai.find_legal_move(g,lambda x:x)

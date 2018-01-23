@@ -148,6 +148,18 @@ class Game:
         """
         return self.__last_coord
 
+    def get_counter(self):
+        """
+        :return:
+        """
+        return self.__counter
+
+    def get_register(self):
+        """
+        :return:
+        """
+        return self.__register
+
     def set_game_on(self):
         """"""
         self.__win = None
@@ -173,7 +185,9 @@ class Game:
 
     def sim(self):
         self.new_board()
-        self.__board[5,0] = 0
-        self.__board[5,1] = 0
-        self.__board[5,2] = 0
-        self.__counter = 4
+        self.make_move(0)
+        self.make_move(6)
+        self.make_move(1)
+        self.make_move(6)
+        self.make_move(2)
+        self.make_move(5)

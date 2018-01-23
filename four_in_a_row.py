@@ -56,8 +56,8 @@ class FourInARow:
         :return:
         """
         sim_game = Game()
-        board, register, cell_set, counter = sim_game.get_attr_for_sim()
-        self.__game.set_attr_for_sim(board, register, cell_set, counter)
+        board, register, cell_set, counter = self.__game.get_attr_for_sim()
+        sim_game.set_attr_for_sim(board, register, cell_set, counter)
 
         self.__ai.find_legal_move(sim_game, self.play_my_move)
 
@@ -77,6 +77,7 @@ class FourInARow:
             try:
                 self.__game.make_move(column)
                 row, col = self.__game.get_last_coord()
+
                 if self.__is_ai:
                     self.__screen.update_cell(row, col, player)
                 else:
@@ -84,8 +85,12 @@ class FourInARow:
 
             except:
                 self.__screen.print_to_screen(self.__game.ILLEGAL_MOVE_MSG, player)
+                print('illegal move')
+                print(d)
         else:
             self.__screen.print_to_screen(self.NOT_YOUR_TURN_MSG, player)
+            print('not turn')
+            print(d)
             return
 
         winner = self.__game.get_winner()
