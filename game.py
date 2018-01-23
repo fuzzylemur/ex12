@@ -18,6 +18,7 @@ class Game:
 
         """
         self.__board = {}
+        self.__register = {}
         self.__cell_set = None
         self.__counter = 0
         self.__last_coord = None
@@ -27,9 +28,9 @@ class Game:
         """
         :return:
         """
-        self.__board = {}
-        for row in range(self.BOARD_Y):
-            for col in range(self.BOARD_X):
+        for col in range(self.BOARD_X):
+            self.__register[col] = self.BOARD_Y-1
+            for row in range(self.BOARD_Y):
                 self.__board[row, col] = self.EMPTY_CELL
 
         self.__cell_set = set(self.__board.keys())
@@ -39,25 +40,56 @@ class Game:
         :param column:
         :return:
         """
-        if self.is_col_full(column) or self.__win:
+        row = self.__register[column]
+
+        if row == -1 or self.__win:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
-        for row in range(self.BOARD_Y-1, -1, -1):
-            coord = row, column
-            if self.__board[coord] == self.EMPTY_CELL:
-                self.__board[coord] = self.get_current_player()
-                self.__last_coord = coord
-                self.__counter += 1
+        coord = row, column
+        if self.__board[coord] == self.EMPTY_CELL:
+            self.__board[coord] = self.get_current_player()
+            self.__last_coord = coord
+            self.__counter += 1
+            self.__register[column] -= 1
+
+
+    def unmake_move(self, col, last_move):
+        """
+        :param col:
+        :param last_move:
+        :return:
+        """
+        for row in range(self.BOARD_Y):
+            coord = row, col
+            if self.__board[coord] != self.EMPTY_CELL:
+                self.__board[coord] = self.EMPTY_CELL
+                self.__last_coord = last_move
+                self.__counter -= 1
                 break
 
-        #print('made move on col '+str(column)+' last_coord: '+str(self.__last_coord)+' player: '+str(pl)+' counter: '+str(self.__counter))
+    def get_player_at(self, row, col):
+        """
+        :param row:
+        :param col:
+        :return:
+        """
+        return self.__board[row, col]
+
+    def get_current_player(self):
+        """
+        :return:
+        """
+        if self.__counter % 2 == 0:
+            return self.PLAYER_ONE
+        else:
+            return self.PLAYER_TWO
 
     def is_col_full(self, column):
         """
         :param column:
         :return:
         """
-        if self.__board[0, column] != self.EMPTY_CELL:
+        if self.__register[column] == -1:
             return True
         else:
             return False
@@ -105,22 +137,11 @@ class Game:
             print('\n')
         print('********************************************')
 
-    def get_player_at(self, row, col):
-        """
-        :param row:
-        :param col:
-        :return:
-        """
-        return self.__board[row, col]
-
-    def get_current_player(self):
+    def get_win_info(self):
         """
         :return:
         """
-        if self.__counter % 2 == 0:
-            return self.PLAYER_ONE
-        else:
-            return self.PLAYER_TWO
+        return self.__last_coord, self.__win
 
     def get_last_coord(self):
         """
@@ -128,62 +149,31 @@ class Game:
         """
         return self.__last_coord
 
-    def set_last_coord(self, coord):
-        """
-        :return:
-        """
-        self.__last_coord = coord
-
-    def get_win_info(self):
-        """
-        :return:
-        """
-        return self.__last_coord, self.__win
-
-    def get_board(self):
-        """"""
-        return self.__board
-
-    def set_board(self, board):
-        """"""
-        self.__board = board
-
-    def unmake_move(self, col, last_move):
-        """"""
-        for row in range(self.BOARD_Y):
-            coord = row, col
-            if self.__board[coord] != self.EMPTY_CELL:
-                self.__board[coord] = self.EMPTY_CELL
-                self.__last_coord = last_move
-                self.__counter -= 1
-                break
-    
     def set_game_on(self):
         """"""
         self.__win = None
 
-    def get_counter(self):
-        """"""
-        return self.__counter
+    def get_attr_for_sim(self):
+        """
+        :return:
+        """
+        return self.__board, self.__register, self.__cell_set, self.__counter
 
-    def set_counter(self, value):
-        """"""
-        self.__counter = value
-
-    def counter_plus_1(self):
-        """"""
-        self.__counter += 1
-        
-    def get_cell_set(self):
-        """"""
-        return self.__cell_set
-
-    def set_cell_set(self, set):
-        """"""
-        self.__cell_set = set
+    def set_attr_for_sim(self, board, register, cell_set, counter):
+        """
+        :param board:
+        :param register:
+        :param cell_set:
+        :param counter:
+        :return:
+        """
+        self.__board = board
+        self.__register = register
+        self.__cell_set = cell_set
+        self.__counter = counter
 
     def sim(self):
         self.__board[5,2] = 0
         self.__board[5,3] = 0
         self.__board[5,4] = 0
-        self.set_counter(4)
+        self.__counter = 4

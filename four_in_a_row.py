@@ -56,9 +56,8 @@ class FourInARow:
         :return:
         """
         sim_game = Game()
-        sim_game.set_board(self.__game.get_board())
-        sim_game.set_counter(self.__game.get_counter())
-        sim_game.set_cell_set(self.__game.get_cell_set())          #copy deepcopy?
+        board, register, cell_set, counter = sim_game.get_attr_for_sim()
+        self.__game.set_attr_for_sim(board, register, cell_set, counter)
 
         self.__ai.find_legal_move(sim_game, self.play_my_move)
 
@@ -124,6 +123,7 @@ class FourInARow:
         if self.__is_ai:
             if self.__game.get_win_info()[1] is None:
                 self.ai_find_move()
+
 
 def main(args):
     player = args[1]

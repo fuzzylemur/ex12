@@ -33,13 +33,11 @@ class AI:
 
     DRAW = Game.DRAW
     ITER = 1000
-    #PLAYER_ONE = Game.PLAYER_ONE
-    #PLAYER_TWO = Game.PLAYER_TWO
+    UPDATE_INTERVAL = 20
 
     def __init__(self):
         self.__my_color = None
         self.__op_color = None
-
         self.__cur_node = Node()
         self.__next_move = None
 
@@ -47,7 +45,7 @@ class AI:
         """"""
         # Saves random move as our move 
         # and then improves it until the timeout
-        possible_moves = self.possible_moves(g).copy()
+        possible_moves = self.possible_moves(g)
         self.__next_move = sample(possible_moves, 1)[0]
 
         self.__my_color = g.get_current_player()
@@ -74,16 +72,17 @@ class AI:
         """Finds all current possible moves and
         deletes illegal moves from the current_node
         children"""
+
         possible_moves = set()
         for move in range(Game.BOARD_X):
             if not g.is_col_full(move):
                 possible_moves.add(move)
-            else:
-                self.__cur_node.remove_child(move)
+            #else:                                              # not needed
+             #   self.__cur_node.remove_child(move)
                 
         return possible_moves
         
-    def set_next_best_move(self, children, legal_moves):
+    def set_next_best_move(self, children):
         """"""
         self.__next_move = max(children.keys(), key=lambda
                                     k: children[k].get_data())
@@ -93,10 +92,10 @@ class AI:
         for i in range(self.ITER): # Can be while true / according to timeout
             self.build_branch(g, root, legal_moves)
             # Save the best choice every 20 branches
-            if i % 20 == 0: # ask Gil about the exact number
+            if i % self.UPDATE_INTERVAL == 0: # ask Gil about the exact number
                 children = self.__cur_node.get_children()
 
-                self.set_next_best_move(children, legal_moves)
+                self.set_next_best_move(children)
 
     def build_branch(self, g, node, legal_moves):
         """"""
