@@ -73,12 +73,18 @@ class Game:
         player = self.get_player_at(row, col)
 
         for direction in self.DIRECTIONS:
+
             for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])
-                if next_cell not in self.__cell_set:
-                    break
-                if self.__board[next_cell] != player:
-                    break
+                if next_cell not in self.__cell_set or self.__board[next_cell] != player:
+                    if i == 3:
+                        reverse_cell = (row - direction[0], col - direction[1])
+                        if reverse_cell not in self.__cell_set or self.__board[reverse_cell] != player:
+                            break
+                        else:
+                            self.__last_coord = reverse_cell
+                    else:
+                        break
 
             else:
                 self.__win = direction
@@ -93,10 +99,11 @@ class Game:
         for i in range(6):
             for j in range(7):
                 if self.__board[(i, j)] is None:
-                    print('_', end='')
+                    print('_', end=' ')
                 else:
-                    print(self.__board[(i, j)], end='')
+                    print(self.__board[(i, j)], end=' ')
             print('\n')
+        print('********************************************')
 
     def get_player_at(self, row, col):
         """

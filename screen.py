@@ -132,13 +132,20 @@ class Screen:
         :return:
         """
 
-        coin = self.__coin1
+        """coin = self.__coin1
         if player == Game.PLAYER_TWO:
             coin = self.__coin2
 
         self.update_helper(0, col, coin)
         for i in range(row):
-            self.__root.after(self.DELAY*(i+1), self.update_helper, i+1, col, coin)
+            self.__root.after(self.DELAY*(i+1), self.update_helper, i+1, col, coin)"""
+
+        coin = self.__coin1
+        if player == Game.PLAYER_TWO:
+            coin = self.__coin2
+
+        self.__cells[row][col].image = coin
+        self.__cells[row][col].configure(image=coin)
 
     def win(self, coord, direction, winner):
         """
@@ -183,6 +190,7 @@ class Screen:
         :return:
         """
         pass
+
 
 
 def func(x):

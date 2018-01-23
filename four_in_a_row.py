@@ -22,13 +22,15 @@ class FourInARow:
         :param ip:
         """
         self.__player = player
+        self.__root = root
+
         self.__game = Game()
         self.__game.new_board() #Can't the game init the board?
 
         if player == ARG_PLAYERS[0]:
             self.__screen = Screen(root, self.play_my_move)
         else:
-            self.__screen = Screen(root, lambda x:None)
+            self.__screen = Screen(root, lambda y:None)
 
         if ip:
             self.__my_color = Game.PLAYER_TWO
@@ -81,8 +83,10 @@ class FourInARow:
         else:
             self.__screen.print_to_gui(self.NOT_YOUR_TURN_MSG)
             return
-            
+
+        self.__game.print_board()
         winner = self.__game.get_winner()
+        #print('did one turn. col: ', column, '  player: ', player, ' winner: ',winner)
         if winner is not None:
             self.end_game(winner)
 
@@ -106,11 +110,11 @@ class FourInARow:
         :param text: the text to be printed.
         :return: None.
         """
-        if text:
-            self.one_turn(int(text[0]), self.__op_color)
-            if self.__player == ARG_PLAYERS[1]:
-                if self.__game.get_win_info()[1] is None:
-                    self.ai_find_move()
+        self.one_turn(int(text[0]), self.__op_color)
+        #print('rcvd message. win info:  ',self.__game.get_win_info())
+        if self.__player == ARG_PLAYERS[1]:
+            if self.__game.get_win_info()[1] is None:           # what if draw?
+                self.ai_find_move()
 
 def main(args):
     player = args[1]

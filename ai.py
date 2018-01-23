@@ -32,6 +32,7 @@ class Node:
 class AI:
 
     DRAW = Game.DRAW
+    ITER = 1000
     #PLAYER_ONE = Game.PLAYER_ONE
     #PLAYER_TWO = Game.PLAYER_TWO
 
@@ -103,7 +104,7 @@ class AI:
 
     def build_tree(self, g, root, legal_moves):
         """"""
-        for i in range(2000): # Can be while true / according to timeout
+        for i in range(self.ITER): # Can be while true / according to timeout
             self.build_branch(g, root, legal_moves)
             # Save the best choice every 20 branches
             if i % 20 == 0: # ask Gil about the exact number
