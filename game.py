@@ -143,7 +143,7 @@ class Game:
 
     def unmake_move(self, col, last_move):
         """"""
-        for row in range(self.BOARD_X):
+        for row in range(self.BOARD_Y):
             coord = row, col
             if self.__board[coord] != self.EMPTY_CELL:
                 self.__board[coord] = self.EMPTY_CELL

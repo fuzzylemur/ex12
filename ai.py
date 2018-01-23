@@ -35,8 +35,9 @@ class AI:
     #PLAYER_ONE = Game.PLAYER_ONE
     #PLAYER_TWO = Game.PLAYER_TWO
 
-    def __init__(self, player):
-        self.__player = player
+    def __init__(self, my_color, op_color):
+        self.__my_color = my_color
+        self.__op_color = op_color
         self.__cur_node = Node()
         self.__next_move = None
 
@@ -44,8 +45,29 @@ class AI:
         """"""
         # Saves random move as our move 
         # and then improves it until the timeout
-        possible_moves = self.possible_moves(g)
+        possible_moves = self.possible_moves(g).copy()
         self.__next_move = sample(possible_moves, 1)[0]
+
+        """for col in possible_moves:
+            temp = g.get_last_coord()
+            g.set_game_on()
+            g.make_move(col)
+            winner = g.get_winner()
+            if winner == self.__my_color:
+                func(col)
+                return
+
+            possible_moves_2 = self.possible_moves(g).copy()
+            for col_2 in possible_moves_2:
+                temp_2 = g.get_last_coord()
+                g.set_game_on()
+                g.make_move(col_2)
+                winner_2 = g.get_winner()
+                if winner_2 == self.__op_color:
+                    possible_moves.remove(col_2)
+                g.unmake_move(col_2, temp_2)
+
+            g.unmake_move(col, temp)"""
 
         try:
             last_col = g.get_last_coord()
@@ -66,7 +88,7 @@ class AI:
         deletes illegal moves from the current_node
         children"""
         possible_moves = set()
-        for move in range(7):
+        for move in range(Game.BOARD_X):
             if not g.is_col_full(move):
                 possible_moves.add(move)
             else:
@@ -94,11 +116,11 @@ class AI:
         winner = g.get_winner()
         if winner is not None:
 
-            if winner == self.__player:
+            if winner == self.__my_color:
                 node.set_data(1)
             elif winner == self.DRAW:
                 node.set_data(0)
-            else:
+            elif winner == self.__op_color:
                 node.set_data(-1)
 
             g.set_game_on()

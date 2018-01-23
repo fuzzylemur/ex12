@@ -21,12 +21,15 @@ class FourInARow:
         :param port:
         :param ip:
         """
+        self.__player = player
         self.__game = Game()
         self.__game.new_board() #Can't the game init the board?
 
-        self.__screen = Screen(root, self.play_my_move)
-        self.__player = player
-        
+        if player == ARG_PLAYERS[0]:
+            self.__screen = Screen(root, self.play_my_move)
+        else:
+            self.__screen = Screen(root, lambda x:None)
+
         if ip:
             self.__my_color = Game.PLAYER_TWO
             self.__op_color = Game.PLAYER_ONE
@@ -40,7 +43,7 @@ class FourInARow:
         self.__communicator.bind_action_to_message(self.handle_message)
 
         if self.__player == ARG_PLAYERS[1]:
-            self.__ai = AI(self.__my_color)
+            self.__ai = AI(self.__my_color, self.__op_color)
             if self.__my_color == Game.PLAYER_ONE:
                 self.ai_find_move()
 
