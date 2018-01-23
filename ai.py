@@ -64,8 +64,9 @@ class AI:
 
         finally:
             # Update the cur node and returns the best move we found so far
+            for i, node in self.__cur_node.get_children().items():
+                print('col: ',i,'  data: ',node.get_data())
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]
-            
             func(self.__next_move)
             
     def possible_moves(self, g):
@@ -79,7 +80,6 @@ class AI:
                 possible_moves.add(move)
             #else:                                              # not needed
              #   self.__cur_node.remove_child(move)
-                
         return possible_moves
         
     def set_next_best_move(self, children):
@@ -138,5 +138,6 @@ if __name__ == "__main__":
 
     ai = AI()
     g = Game()
-    root = Node()
+    g.sim()
+
     print(ai.find_legal_move(g,lambda x:x))

@@ -46,26 +46,25 @@ class Game:
             raise Exception(self.ILLEGAL_MOVE_MSG)
 
         coord = row, column
-        if self.__board[coord] == self.EMPTY_CELL:
-            self.__board[coord] = self.get_current_player()
-            self.__last_coord = coord
-            self.__counter += 1
-            self.__register[column] -= 1
+        self.__board[coord] = self.get_current_player()
+        self.__last_coord = coord
+        self.__counter += 1
+        self.__register[column] -= 1
 
 
-    def unmake_move(self, col, last_move):
+    def unmake_move(self, column, last_move):
         """
         :param col:
         :param last_move:
         :return:
         """
-        for row in range(self.BOARD_Y):
-            coord = row, col
-            if self.__board[coord] != self.EMPTY_CELL:
-                self.__board[coord] = self.EMPTY_CELL
-                self.__last_coord = last_move
-                self.__counter -= 1
-                break
+        row = self.__register[column]+1
+        coord = row, column
+
+        self.__board[coord] = self.EMPTY_CELL
+        self.__last_coord = last_move
+        self.__counter -= 1
+        self.__register[column] += 1
 
     def get_player_at(self, row, col):
         """
@@ -173,7 +172,8 @@ class Game:
         self.__counter = counter
 
     def sim(self):
+        self.new_board()
+        self.__board[5,0] = 0
+        self.__board[5,1] = 0
         self.__board[5,2] = 0
-        self.__board[5,3] = 0
-        self.__board[5,4] = 0
         self.__counter = 4
