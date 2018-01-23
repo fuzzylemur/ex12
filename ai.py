@@ -36,9 +36,10 @@ class AI:
     #PLAYER_ONE = Game.PLAYER_ONE
     #PLAYER_TWO = Game.PLAYER_TWO
 
-    def __init__(self, my_color, op_color):
-        self.__my_color = my_color
-        self.__op_color = op_color
+    def __init__(self):
+        self.__my_color = None
+        self.__op_color = None
+
         self.__cur_node = Node()
         self.__next_move = None
 
@@ -49,26 +50,11 @@ class AI:
         possible_moves = self.possible_moves(g).copy()
         self.__next_move = sample(possible_moves, 1)[0]
 
-        """for col in possible_moves:
-            temp = g.get_last_coord()
-            g.set_game_on()
-            g.make_move(col)
-            winner = g.get_winner()
-            if winner == self.__my_color:
-                func(col)
-                return
-
-            possible_moves_2 = self.possible_moves(g).copy()
-            for col_2 in possible_moves_2:
-                temp_2 = g.get_last_coord()
-                g.set_game_on()
-                g.make_move(col_2)
-                winner_2 = g.get_winner()
-                if winner_2 == self.__op_color:
-                    possible_moves.remove(col_2)
-                g.unmake_move(col_2, temp_2)
-
-            g.unmake_move(col, temp)"""
+        self.__my_color = g.get_current_player()
+        if self.__my_color == g.PLAYER_ONE:
+            self.__op_color = g.PLAYER_TWO
+        else:
+            self.__op_color = g.PLAYER_ONE
 
         try:
             last_col = g.get_last_coord()
@@ -151,7 +137,7 @@ class AI:
 
 if __name__ == "__main__":
 
-    ai = AI(0)
+    ai = AI()
     g = Game()
     root = Node()
     print(ai.find_legal_move(g,lambda x:x))

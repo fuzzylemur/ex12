@@ -21,16 +21,15 @@ class FourInARow:
         :param port:
         :param ip:
         """
-        self.__player = player
         self.__root = root
+
+        if player == ARG_PLAYERS[1]:
+            self.__is_ai = True
+        else:
+            self.__is_ai = False
 
         self.__game = Game()
         self.__game.new_board() #Can't the game init the board?
-
-        if player == ARG_PLAYERS[0]:
-            self.__screen = Screen(root, self.play_my_move)
-        else:
-            self.__screen = Screen(root, lambda y:None)
 
         if ip:
             self.__my_color = Game.PLAYER_TWO
@@ -44,10 +43,13 @@ class FourInARow:
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.handle_message)
 
-        if self.__player == ARG_PLAYERS[1]:
-            self.__ai = AI(self.__my_color, self.__op_color)
+        if self.__is_ai:
+            self.__screen = Screen(root, self.__my_color, lambda y: None)
+            self.__ai = AI()
             if self.__my_color == Game.PLAYER_ONE:
                 self.ai_find_move()
+        else:
+            self.__screen = Screen(root, self.__my_color, self.play_my_move)
 
     def ai_find_move(self):
         """
@@ -76,17 +78,18 @@ class FourInARow:
             try:
                 self.__game.make_move(column)
                 row, col = self.__game.get_last_coord()
-                self.__screen.update_cell(row, col, player)
+                if self.__is_ai:
+                    self.__screen.update_cell(row, col, player)
+                else:
+                    self.__screen.update_cell_anim(row, col, player)
 
             except:
-                self.__screen.print_to_gui(self.__game.ILLEGAL_MOVE_MSG)
+                self.__screen.print_to_screen(self.__game.ILLEGAL_MOVE_MSG, player)
         else:
-            self.__screen.print_to_gui(self.NOT_YOUR_TURN_MSG)
+            self.__screen.print_to_screen(self.NOT_YOUR_TURN_MSG, player)
             return
 
-        self.__game.print_board()
         winner = self.__game.get_winner()
-        #print('did one turn. col: ', column, '  player: ', player, ' winner: ',winner)
         if winner is not None:
             self.end_game(winner)
 
@@ -97,10 +100,17 @@ class FourInARow:
         win_coord, win_dir = self.__game.get_win_info()
         self.__screen.win(win_coord, win_dir, winner)
 
-        if winner == 2:
-            self.__screen.print_to_gui('Draw')
-        else:
-            self.__screen.print_to_gui('winner is '+str(winner))
+        if winner == Game.DRAW:
+            self.__screen.print_to_screen('Draw', self.__my_color)
+            self.__screen.print_to_screen('Draw', self.__op_color)
+
+        elif winner == self.__my_color:
+            self.__screen.print_to_screen('Winner!', self.__my_color)
+            self.__screen.print_to_screen('Loser :(', self.__op_color)
+
+        elif winner == self.__op_color:
+            self.__screen.print_to_screen('Winner!', self.__op_color)
+            self.__screen.print_to_screen('Loser :(', self.__my_color)
 
     def handle_message(self, text=None):
         """
@@ -111,9 +121,8 @@ class FourInARow:
         :return: None.
         """
         self.one_turn(int(text[0]), self.__op_color)
-        #print('rcvd message. win info:  ',self.__game.get_win_info())
-        if self.__player == ARG_PLAYERS[1]:
-            if self.__game.get_win_info()[1] is None:           # what if draw?
+        if self.__is_ai:
+            if self.__game.get_win_info()[1] is None:
                 self.ai_find_move()
 
 def main(args):
