@@ -175,7 +175,6 @@ class Screen:
         for i in range(self.FLASH_COUNT):
             self.__root.after(i*self.FLASH_DELAY, self.win_helper, cell_list, i, win_coin)
 
-
     def win_helper(self, cell_list, index, win_coin):
         """
         :param index:
@@ -187,7 +186,6 @@ class Screen:
 
         cell_list[(index-1)%Game.WIN_LEN].image = win_coin
         cell_list[(index-1)%Game.WIN_LEN].configure(image=win_coin)
-
 
     def print_to_screen(self, msg, player, end=False):
         """
@@ -208,7 +206,6 @@ class Screen:
             else:
                 self.__root.after(self.DEFAULT_TIMEOUT, self.clear_msg, player)
 
-
     def clear_msg(self, player):
         """
         :param player:
@@ -226,6 +223,7 @@ class Screen:
 
 def func(x):
     pass
+
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -1,0 +1,34 @@
+giladam, jonathanzd
+200139814, 204620835
+Gil Adam, Jonathan Zedaka
+
+I discussed the exercise with: []
+
+====================================
+=  README for ex12: Four In A Row  =
+====================================
+A Tkinter based GUI implementation of the famous 'Four In A Row' game.
+Game is played by running two instances of 'four_in_a_row.py' (either on the same machine or on two machines on the
+same network). Instances are run from command line by calling:
+
+python3 four_in_a_row.py <player> <port> <ip>
+
+<player> is either 'human' or 'ai' and configures game mode to be manual or automatic, <port> is the port to
+communicate through (maximum 65535, recommended around 8000) and <ip> is the ip address of the machine running
+the instance to connect to (first instance is created with no ip argument given, and the second connects to it).
+
+==============
+=  Classes:  =
+==============
+Game implementation includes the following classes:
+- FourInARow: The high level application object, handling game events, turn order and legality, communication between
+              instances and controlling the objects that manage GUI, gameplay and AI.
+- Game:       The object representing the game board, handling current game state, making moves on the board and
+              checking for game end conditions.
+- Screen:
+
+
+===================
+=  AI Algorithm:  =
+===================
+
