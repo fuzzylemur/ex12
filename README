@@ -43,10 +43,11 @@ Implementation includes the following classes:
                     the game instance.
 
 - Game:             The object representing the game board, handling current game state, making moves on the board and
-                    checking for game end conditions. Assumes a local folder named 'GUI' with game element images.
+                    checking for game end conditions.
 
 - Screen:           GUI object using Tkinter library. Handles the graphical display of the game, updating moves,
                     human user input, displaying messages for invalid moves and the result at game end.
+                    Assumes a local folder named 'gui' with game element images.
 
 - Communicator:     Object handling the non-blocking communication between game instances, initiating and connecting,
                     sending and receiving messages. (Implemented by the wonderful HUJI CS crew)
@@ -66,8 +67,8 @@ in the tree represents a game turn and has up to 7 children nodes (0 if it repre
 numerical score value signifying the AI player's position strength at that state (Positive: winning, Negative: losing).
 Each branch of the tree is created by a linear recursion picking one random possible move at each node, until reaching
 a game end, then updates the leaf score based on outcome (win:+1, lose:-1, draw:0) and backtracks in the recursion
-to update the scores of the nodes leading to that leaf. When back-propagating the result each node adds to its score the value
-returned from the child node and returns to its parent node that value divided by 2. In that way more significance
-is given in the score to outcomes that are closer to the current game state. Numerous branches are created iteratively
-by build_tree function, the longer this function runs it samples a bigger section of the search space so that node
-scores should represent a more precise analysis of the preferable next move.
+to update the scores of the nodes leading to that leaf. When back-propagating the result each node adds to its score
+the value returned from the child node and returns to its parent node that value divided by 2. In that way more
+significance is given in the score to outcomes that are closer to the current game state. Numerous branches are
+created iteratively by build_tree function, the longer this function runs it samples a bigger section of the search
+space so that node scores should represent a more precise forecast for the preferable next move.

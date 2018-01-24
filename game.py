@@ -1,6 +1,9 @@
 
 class Game:
-
+    """
+    Object of class Game represents the game board, handles current game state, makes moves on the board and
+    checks for game end conditions.
+    """
     EMPTY_CELL = None
     PLAYER_ONE = 0
     PLAYER_TWO = 1
@@ -11,24 +14,20 @@ class Game:
     WIN_LEN = 4
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
-    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]
+    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]    # [row change, column change]
 
     def __init__(self):
         """
+        Initialize a new Game object, with proper attributes in starting state.
+        """
+        self.__board = {}               # dictionary of board cells {(row, col): EMPTY_CELL/PLAYER_ONE/PLAYER_TWO}
+        self.__register = {}            # dictionary of next available row in each column {column: row}
+        self.__cell_set = None          # set of all cell coordinates ((x,y),...)
+        self.__counter = 0              # turn counter
+        self.__last_coord = None        # last coordinate played
+        self.__win = None               # None if game is on, DRAW if draw, win sequence direction [row,col] if win
 
-        """
-        self.__board = {}
-        self.__register = {}
-        self.__cell_set = None
-        self.__counter = 0
-        self.__last_coord = None
-        self.__win = None
-
-    def new_board(self):
-        """
-        :return:
-        """
-        for col in range(self.BOARD_X):
+        for col in range(self.BOARD_X):                     # initialize start values for board, register, cell_set
             self.__register[col] = self.BOARD_Y-1
             for row in range(self.BOARD_Y):
                 self.__board[row, col] = self.EMPTY_CELL
@@ -37,15 +36,17 @@ class Game:
 
     def get_player_at(self, row, col):
         """
-        :param row:
-        :param col:
-        :return:
+        Get player at a certain board coordinate
+        :param row: row in board (0 <= int <= 5)
+        :param col: column in board (0 <= int <= 6)
+        :return: EMPTY_CELL / PLAYER_ONE / PLAYER_TWO
         """
         return self.__board[row, col]
 
     def get_current_player(self):
         """
-        :return:
+        Find out who's turn it is.
+        :return: PLAYER_ONE / PLAYER_TWO
         """
         if self.__counter % 2 == 0:
             return self.PLAYER_ONE
@@ -54,8 +55,9 @@ class Game:
 
     def is_col_full(self, column):
         """
-        :param column:
-        :return:
+        Find out if a column is full
+        :param column: the column to check (0 <= int <= 6)
+        :return: True if full, False if not
         """
         if self.__register[column] == -1:
             return True
@@ -64,8 +66,10 @@ class Game:
 
     def make_move(self, column):
         """
-        :param column:
-        :return:
+        Put a playing stone for current player in the given column.
+        Raise exception if move is illegal (full column or game ended).
+        :param column: the column to play (0 <= int <= 6)
+        :return: None
         """
         row = self.__register[column]
 
@@ -80,9 +84,11 @@ class Game:
 
     def unmake_move(self, column, last_move):
         """
-        :param column:
-        :param last_move:
-        :return:
+        Unmake a move on the board, given a column and the coordinate of the move made before that move,
+        (to keep object attr last_coord updated). Used for example do undo moves done by a backtracking recursion.
+        :param column: the column to undo (0 <= int <= 6)
+        :param last_move: coordinate of the previous previous move (row, col)
+        :return: None
         """
         row = self.__register[column]+1
         coord = row, column
@@ -94,15 +100,16 @@ class Game:
 
     def get_winner(self):
         """
-        :return:
+        Check to see if game has ended (win or a draw).
+        :return: const DRAW if draw, const PLAYER_ONE/PLAYER_TWO if win
         """
-        if self.__last_coord is None:
+        if self.__last_coord is None:               # no stones on board
             return None
 
-        row, col = self.__last_coord
+        row, col = self.__last_coord                # look at last move played
         player = self.get_player_at(row, col)
 
-        for direction in self.DIRECTIONS:
+        for direction in self.DIRECTIONS:           # and in all directions
 
             for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])

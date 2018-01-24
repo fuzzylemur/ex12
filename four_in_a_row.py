@@ -27,7 +27,6 @@ class FourInARow:
         """
         self.__root = root
         self.__game = Game()
-        self.__game.new_board()
 
         if player == self.PLAYERS[1]:
             self.__is_ai = True
