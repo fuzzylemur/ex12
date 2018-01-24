@@ -3,23 +3,19 @@ from game import Game
 
 class Node:
 
-    def __init__(self, data=0,depth=0):
-        self.__data = data
-        self.__depth = depth
+    def __init__(self, score=0):
+        self.__score = score
         self.__children = dict()
 
-    def get_data(self):
+    def get_score(self):
         """"""
-        return self.__data
+        return self.__score
 
     def get_children(self):
         return self.__children
-        
-    def get_depth(self):
-        return self.__depth
 
-    def set_data(self, n_data):
-        self.__data += n_data
+    def add_score(self, n_score):
+        self.__score += n_score
 
     def add_child(self, col, node):
         self.__children[col] = node
@@ -32,7 +28,7 @@ class Node:
 class AI:
 
     DRAW = Game.DRAW
-    ITER = 1000
+    ITERATIONS = 1000
     UPDATE_INTERVAL = 20
 
     def __init__(self):
@@ -40,106 +36,126 @@ class AI:
         self.__op_color = None
         self.__cur_node = Node()
         self.__next_move = None
+        self.__first_time = True
 
     def find_legal_move(self, g, func, timeout=None):
-        """"""
-        # Saves random move as our move 
-        # and then improves it until the timeout
-        possible_moves = self.possible_moves(g)
-        self.__next_move = sample(possible_moves, 1)[0]
+        """
+        :param g:
+        :param func:
+        :param timeout:
+        :return:
+        """
+        if self.__first_time:                                   # when running the function for the first time
+            self.__my_color = g.get_current_player()            # register player colors inside AI object
+            if self.__my_color == g.PLAYER_ONE:
+                self.__op_color = g.PLAYER_TWO
+            else:
+                self.__op_color = g.PLAYER_ONE
+            self.__first_time = False
 
-        self.__my_color = g.get_current_player()
-        if self.__my_color == g.PLAYER_ONE:
-            self.__op_color = g.PLAYER_TWO
-        else:
-            self.__op_color = g.PLAYER_ONE
+        possible_moves = self.possible_moves(g)                 # find possible moves (col is not full)
+        self.__next_move = sample(possible_moves, 1)[0]         # and choose one randomly as a default
 
         try:
-            last_col = g.get_last_coord()
-            if last_col is not None and self.__cur_node.get_children() != dict():
-                children = self.__cur_node.get_children()
-                self.__cur_node = children[last_col[1]]
-            # Build tree and improve current decision
-            self.build_tree(g, self.__cur_node, possible_moves)
+            last_col = g.get_last_coord()                       # see what was the last move played
+            if last_col is not None and self.__cur_node.get_children() != dict():   # if not the first move and
+                children = self.__cur_node.get_children()                           # current node not empty
+                self.__cur_node = children[last_col[1]]                             # update current node accordingly
 
-        finally:
-            # Update the cur node and returns the best move we found so far
+            self.build_tree(g, self.__cur_node, possible_moves)                     # and build a tree from that node
+
+        finally:                                                                    # when function is halted
+
+            self.__cur_node = self.__cur_node.get_children()[self.__next_move]      # update cur node to best move
+            func(self.__next_move)                                                  # and call func with that move
+
             print('*********** move number ',g.get_counter(),'***********')
             print('register: ', g.get_register())
             for i, node in self.__cur_node.get_children().items():
-                print('col: ',i,'  data: ',node.get_data())
-            self.__cur_node = self.__cur_node.get_children()[self.__next_move]
-            func(self.__next_move)
+                print('col: ',i,'  score: ',node.get_score())
 
-    def possible_moves(self, g):
-        """Finds all current possible moves and
-        deletes illegal moves from the current_node
-        children"""
+    def build_tree(self, g, root, possible_moves):
+        """
+        :param g:
+        :param root:
+        :param possible_moves:
+        :return:
+        """
+        for i in range(self.ITERATIONS):                    # build branches in iteratively
+            self.build_branch(g, root, possible_moves)
 
-        possible_moves = set()
-        for move in range(Game.BOARD_X):
-            if not g.is_col_full(move):
-                possible_moves.add(move)
-
-        return possible_moves
-        
-    def set_next_best_move(self, children):
-        """"""
-        self.__next_move = max(children.keys(), key=lambda
-                                    k: children[k].get_data())
-
-    def build_tree(self, g, root, legal_moves):
-        """"""
-        for i in range(self.ITER): # Can be while true / according to timeout
-            self.build_branch(g, root, legal_moves)
-            # Save the best choice every 20 branches
-            if i % self.UPDATE_INTERVAL == 0: # ask Gil about the exact number
+            if i % self.UPDATE_INTERVAL == 0:               # update best move every now and then
                 children = self.__cur_node.get_children()
-
                 self.set_next_best_move(children)
 
-    def build_branch(self, g, node, legal_moves):
-        """"""
+    def build_branch(self, g, node, possible_moves):
+        """
+        :param g:
+        :param node:
+        :param possible_moves:
+        :return:
+        """
         winner = g.get_winner()
-        if winner is not None:
-
+        if winner is not None:                   # base case of recursion, simulated game has ended
+                                                    # give the leaf a score based on end result
             if winner == self.__my_color:
-                node.set_data(1)
+                node.add_score(1)
             elif winner == self.DRAW:
-                node.set_data(0)
+                node.add_score(0)
             elif winner == self.__op_color:
-                node.set_data(-1)
+                node.add_score(-1)
 
-            g.set_game_on()
-            return node.get_data()
+            g.set_game_on()                         # turn game back on (getting a winner has turned it off)
+            return node.get_score()                  # and return the leaf score upwards in the recursion
 
-        else:
+        else:                                    # else simulated game is still on
 
-            new_moves = self.possible_moves(g)
+            new_moves = self.possible_moves(g)      # find possible moves from current node
             for col in list(node.get_children().keys())[:]:
                 if col not in new_moves:
-                    node.remove_child(col)
+                    node.remove_child(col)          # and remove children for illegal moves (col is full)
 
-            chosen_col = sample(new_moves, 1)[0]
-            temp = g.get_last_coord()
-            g.make_move(chosen_col)
+            chosen_col = sample(new_moves, 1)[0]    # pick the next move randomly
+            temp = g.get_last_coord()               # record the last move made (for undoing when backtracking)
+            g.make_move(chosen_col)                 # and make that move
 
-            if chosen_col in node.get_children().keys():
-                next_node = node.get_children()[chosen_col]
-                result = self.build_branch(g, next_node, new_moves)
-                node.set_data(result)
-            else:
-                child = Node(0, node.get_depth()+1)
-                node.add_child(chosen_col, child)
-                result = self.build_branch(g, child, new_moves)
-                node.set_data(result)
+            if chosen_col in node.get_children().keys():            # if node already has a child for that move
+                next_node = node.get_children()[chosen_col]             # go to that child node
+                result = self.build_branch(g, next_node, new_moves)     # continue building the branch from it
+                node.add_score(result)                                  # and update the node score
 
-            #Undo all changes
-            #if not g.is_col_full(chosen_col):
-             #   new_moves.add(chosen_col)
-            g.unmake_move(chosen_col, temp)
+            else:                                                   # if child for this move does not exist
+                child = Node(0)                                         # create a node for it
+                node.add_child(chosen_col, child)                       # link it to parent node
+                result = self.build_branch(g, child, new_moves)         # continue building the branch from it
+                node.add_score(result)                                  # and update the node score
 
-        return result/2
+            g.unmake_move(chosen_col, temp)                             # when exiting recursion undo the move made
+
+        return result/2                      # return the result from recursion divided by two
+                                             # so that results closer to current node will have more weight
+    def possible_moves(self, g):
+        """
+        Finds all current possible moves (column not full)
+        :param g:
+        :return:
+        """
+
+        possible_moves = set()
+        for column in range(Game.BOARD_X):
+            if not g.is_col_full(column):
+                possible_moves.add(column)
+
+        return possible_moves
+
+    def set_next_best_move(self, children):
+        """
+        :param children:
+        :return:
+        """
+        self.__next_move = max(children.keys(), key=lambda
+            k: children[k].get_score())
+
 
 if __name__ == "__main__":
 

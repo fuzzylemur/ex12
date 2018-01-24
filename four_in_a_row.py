@@ -13,7 +13,10 @@ ARG_PORT_MAX = 65535
 
 class FourInARow:
 
-    NOT_YOUR_TURN_MSG = 'Not your turn!'
+    MSG_NOT_TURN = 'Not your turn!'
+    MSG_DRAW = 'draw'
+    MSG_WIN = 'winner!'
+    MSG_LOSE = 'loser :('
     
     def __init__(self, root, player, port, ip):
         """
@@ -79,18 +82,16 @@ class FourInARow:
                 row, col = self.__game.get_last_coord()
 
                 if self.__is_ai:
-                    self.__screen.update_cell(row, col, player)
+                    self.__screen.update_cell(row, col, player, anim=False)
                 else:
-                    self.__screen.update_cell_anim(row, col, player)
+                    self.__screen.update_cell(row, col, player, anim=True)
 
             except:
                 self.__screen.print_to_screen(self.__game.ILLEGAL_MOVE_MSG, player)
-                print('illegal move')
-                print(d)
+                return
+
         else:
-            self.__screen.print_to_screen(self.NOT_YOUR_TURN_MSG, player)
-            print('not turn')
-            print(d)
+            self.__screen.print_to_screen(self.MSG_NOT_TURN, player)
             return
 
         winner = self.__game.get_winner()
@@ -105,18 +106,18 @@ class FourInARow:
         self.__screen.win(win_coord, win_dir, winner)
 
         if winner == Game.DRAW:
-            self.__screen.print_to_screen('Draw', self.__my_color)
-            self.__screen.print_to_screen('Draw', self.__op_color)
+            self.__screen.print_to_screen(self.MSG_DRAW, self.__my_color)
+            self.__screen.print_to_screen(self.MSG_DRAW, self.__op_color)
 
         elif winner == self.__my_color:
-            self.__screen.print_to_screen('Winner!', self.__my_color)
-            self.__screen.print_to_screen('Loser :(', self.__op_color)
+            self.__screen.print_to_screen(self.MSG_WIN, self.__my_color)
+            self.__screen.print_to_screen(self.MSG_LOSE, self.__op_color)
 
         elif winner == self.__op_color:
-            self.__screen.print_to_screen('Winner!', self.__op_color)
-            self.__screen.print_to_screen('Loser :(', self.__my_color)
+            self.__screen.print_to_screen(self.MSG_WIN, self.__op_color)
+            self.__screen.print_to_screen(self.MSG_LOSE, self.__my_color)
 
-    def handle_message(self, text=None):
+    def handle_message(self, message=None):
         """
         Specifies the event handler for the message getting event in the
         communicator. Prints a message when invoked (and invoked by the
@@ -124,10 +125,11 @@ class FourInARow:
         :param text: the text to be printed.
         :return: None.
         """
-        self.one_turn(int(text[0]), self.__op_color)
-        if self.__is_ai:
-            if self.__game.get_win_info()[1] is None:
-                self.ai_find_move()
+        if message:
+            self.one_turn(int(message[0]), self.__op_color)
+            if self.__is_ai:
+                if self.__game.get_win_info()[1] is None:
+                    self.ai_find_move()
 
 
 def main(args):

@@ -7,14 +7,16 @@ from PIL import Image, ImageTk
 class Screen:
 
     CELL_ORI = (271.5, 255)
+    CELL_OFFSET = (71.5, 65)
     BUT_ORI = (271, 165)
+
     TXT1_ORI = (165, 595)
     TXT2_ORI = (852, 595)
-    MSG_OFF = 100
-    MSG_TIMEOUT = 5000
-    OFF = (71.5, 65)
-    DELAY = 50
-    WIN_DELAY = 85
+    MSG_OFFSET = 100
+
+    MSG_TIMEOUT = 4000
+    ANIM_DELAY = 50
+    FLASH_DELAY = 85
     FLASH_COUNT = 1000
 
 
@@ -58,9 +60,9 @@ class Screen:
         :return:
         """
         self.__root.resizable(width=False, height=False)
-        self.__text_font = font.Font(family='Courier', size=13)
-        self.__text_font_bold = font.Font(family='Courier', size=13, weight=font.BOLD)
 
+        text_font = font.Font(family='Courier', size=13)
+        text_font_bold = font.Font(family='Courier', size=13, weight=font.BOLD)
 
         label_bg = tk.Label(self.__root, image=self.__bg, bd=0)
         label_bg.image = self.__bg
@@ -71,7 +73,7 @@ class Screen:
             for j in range(Game.BOARD_X):
                 temp_label = tk.Label(self.__root, image=self.__blank,  bd=0)
                 temp_label.image = self.__blank
-                temp_label.place(x=self.CELL_ORI[0]+j*self.OFF[0], y=self.CELL_ORI[1]+i*self.OFF[1])
+                temp_label.place(x=self.CELL_ORI[0]+j*self.CELL_OFFSET[0], y=self.CELL_ORI[1]+i*self.CELL_OFFSET[1])
                 temp_row.append(temp_label)
             self.__cells.append(temp_row)
 
@@ -79,26 +81,23 @@ class Screen:
             temp_button = tk.Label(self.__root, image=self.__but1, bd=0)
             temp_button.image = self.__but1
 
-            temp_button.bind("<Enter>", lambda event, col=i: self.button_enter(event, col))
+            temp_button.bind("<Enter>", lambda event, col=i: self.button_enter(event, col, press=False))
             temp_button.bind("<Leave>", lambda event, col=i: self.button_leave(event, col))
             temp_button.bind("<Button-1>", lambda event, col=i: self.button_leave(event, col))
-            temp_button.bind("<ButtonRelease-1>", lambda event, col=i: self.button_action(event, col))
+            temp_button.bind("<ButtonRelease-1>", lambda event, col=i: self.button_enter(event, col, press=True))
 
-            temp_button.place(x=self.BUT_ORI[0]+i*self.OFF[0], y=self.BUT_ORI[1])
+            temp_button.place(x=self.BUT_ORI[0]+i*self.CELL_OFFSET[0], y=self.BUT_ORI[1])
             self.__buttons.append(temp_button)
 
-        self.__textbox1 = tk.Label(self.__root, font=self.__text_font, bg='black', fg='green', justify=tk.CENTER)
+        self.__textbox1 = tk.Label(self.__root, font=text_font, bg='black', fg='green', justify=tk.CENTER)
+        self.__textbox2 = tk.Label(self.__root, font=text_font, bg='black', fg='green', justify=tk.CENTER)
         self.__textbox1.place(x=self.TXT1_ORI[0], y=self.TXT1_ORI[1], anchor=tk.CENTER)
-        self.__textbox2 = tk.Label(self.__root, font=self.__text_font, bg='black', fg='green', justify=tk.CENTER)
         self.__textbox2.place(x=self.TXT2_ORI[0], y=self.TXT2_ORI[1], anchor=tk.CENTER)
 
-        self.__msgbox1 = tk.Label(self.__root, font=self.__text_font_bold, bg='black', fg='green', justify=tk.CENTER)
-        self.__msgbox1.place(x=self.TXT1_ORI[0], y=self.TXT1_ORI[1]-self.MSG_OFF, anchor=tk.CENTER)
-        self.__msgbox2 = tk.Label(self.__root, font=self.__text_font_bold, bg='black', fg='green', justify=tk.CENTER)
-        self.__msgbox2.place(x=self.TXT2_ORI[0], y=self.TXT2_ORI[1]-self.MSG_OFF, anchor=tk.CENTER)
-
-        #self.__test_but = tk.Button(text='test', command=self.print_to_screen)
-        #self.__test_but.place(x=100, y=100)
+        self.__msgbox1 = tk.Label(self.__root, font=text_font_bold, bg='black', fg='green', justify=tk.CENTER)
+        self.__msgbox2 = tk.Label(self.__root, font=text_font_bold, bg='black', fg='green', justify=tk.CENTER)
+        self.__msgbox1.place(x=self.TXT1_ORI[0], y=self.TXT1_ORI[1]-self.MSG_OFFSET, anchor=tk.CENTER)
+        self.__msgbox2.place(x=self.TXT2_ORI[0], y=self.TXT2_ORI[1]-self.MSG_OFFSET, anchor=tk.CENTER)
 
         if my_color == Game.PLAYER_ONE:
             self.__textbox1.config(text = "PLAYER 1\nyou")
@@ -107,12 +106,14 @@ class Screen:
             self.__textbox1.config(text = "PLAYER 1\nopponent")
             self.__textbox2.config(text = "PLAYER 2\nyou")
 
-    def button_enter(self, event, col):
+    def button_enter(self, event, col, press):
         """
         :return:
         """
         self.__buttons[col].image = self.__but2
         self.__buttons[col].configure(image=self.__but2)
+        if press:
+            self.__func(col)
 
     def button_leave(self, event, col):
         """
@@ -120,14 +121,6 @@ class Screen:
         """
         self.__buttons[col].image = self.__but1
         self.__buttons[col].configure(image=self.__but1)
-
-    def button_action(self, event, col):
-        """
-        :return:
-        """
-        self.__buttons[col].image = self.__but2
-        self.__buttons[col].configure(image=self.__but2)
-        self.__func(col)
 
     def anim_helper(self, row, col, coin):
         """
@@ -140,7 +133,7 @@ class Screen:
         self.__cells[row][col].image = coin
         self.__cells[row][col].configure(image=coin)
 
-    def update_cell(self, row, col, player):
+    def update_cell(self, row, col, player, anim):
         """
         :param row:
         :param col:
@@ -151,31 +144,13 @@ class Screen:
         if player == Game.PLAYER_TWO:
             coin = self.__coin2
 
-        self.__cells[row][col].image = coin
-        self.__cells[row][col].configure(image=coin)
-
-    def update_cell_anim(self, row, col, player):
-        """
-        :param row:
-        :param col:
-        :param player:
-        :return:
-        """
-
-        coin = self.__coin1
-        if player == Game.PLAYER_TWO:
-            coin = self.__coin2
-
-        self.anim_helper(0, col, coin)
-        for i in range(row):
-            self.__root.after(self.DELAY*(i+1), self.anim_helper, i+1, col, coin)
-
-        coin = self.__coin1
-        if player == Game.PLAYER_TWO:
-            coin = self.__coin2
-
-        self.__cells[row][col].image = coin
-        self.__cells[row][col].configure(image=coin)
+        if anim:
+            self.anim_helper(0, col, coin)
+            for i in range(row):
+                self.__root.after(self.ANIM_DELAY*(i+1), self.anim_helper, i+1, col, coin)
+        else:
+            self.__cells[row][col].image = coin
+            self.__cells[row][col].configure(image=coin)
 
     def win(self, coord, direction, winner):
         """
@@ -198,7 +173,7 @@ class Screen:
             cell_list.append(self.__cells[row+i*dir_row][col+i*dir_col])
 
         for i in range(self.FLASH_COUNT):
-            self.__root.after(i*self.WIN_DELAY, self.win_helper, cell_list, i, win_coin)
+            self.__root.after(i*self.FLASH_DELAY, self.win_helper, cell_list, i, win_coin)
 
 
     def win_helper(self, cell_list, index, win_coin):
