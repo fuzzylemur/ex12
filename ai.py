@@ -2,6 +2,7 @@ from random import sample
 from game import Game
 
 
+
 class Node:
 
     def __init__(self, score=0):
