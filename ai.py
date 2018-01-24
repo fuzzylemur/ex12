@@ -1,8 +1,20 @@
+###########################################################
+#
+#
+#
+#
+#
+###########################################################
+
 from random import sample
 from game import Game
 
 
 class Node:
+    """A simple node Object which includes a score value
+    and a dictionary of children where key=column, value=node
+    The constructor receives a score(float) value when called.
+    Default value for score is 0"""
 
     def __init__(self, score=0):
         """The function initialize all node's private values.
@@ -37,13 +49,22 @@ class Node:
 
 
 class AI:
+    """
+    AI object is responsible for deciding on game moves when 
+    game instance is defined to be AI. A move is done by AI when
+    the method find_legal_move(game, function) is called, given a Game
+    object and a function to be called with the move chosen by the algorithm.
+    """
+
     DRAW = Game.DRAW
-    ITERATIONS = 1000
+    ITERATIONS = 3000
     UPDATE_INTERVAL = 20
     FALLOFF_VALUE = 2
     SCORES = (1, 0, -1)  # (win, draw, lose)
 
     def __init__(self):
+        """The function initialize all AI's private values.
+        It receives nothing and returns nothing"""
         self.__my_color = None
         self.__op_color = None
         self.__cur_node = Node()
@@ -85,19 +106,14 @@ class AI:
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]  # update cur node to best move
             func(self.__next_move)                                              # and call func with that move
 
-            print('*********** move number ', g.get_counter(), '***********')
-            print('register: ', g.get_register())
-            for i, node in self.__cur_node.get_children().items():
-                print('col: ', i, '  score: ', node.get_score())
-
     def build_tree(self, g, root):
         """
         The function uses the 'helper' func build_branch to build a decision tree
         in order to find the optimal move for find_legal_move.
         The function saves the best move it finds every UPDATE_INTERVAL iterations.
         :param g: A simulated game object, identical to the real game.
-        :param root:
-        :return:
+        :param root: A certain tree node to start building the tree from.
+        :return: None
         """
         for i in range(self.ITERATIONS):  # build branches in iteratively
             self.build_branch(g, root)
@@ -108,9 +124,13 @@ class AI:
 
     def build_branch(self, g, node):
         """
-        :param g:
-        :param node:
-        :return:
+        A recursive function which build one tree branch for each call.
+        The function recursively calls itself until it reaches a leaf
+        (A situation of win/loss/draw)
+        :param g: A simulated game object, identical to the real game.
+        :param node: A node object to build the branch from.
+        :return: Base case: The given node score
+                 Otherwise: The result from the base case divided by the FALLOFF_VALUE
         """
         winner = g.get_winner()
         if winner is not None:  # base case of recursion, simulated game has ended
@@ -155,9 +175,9 @@ class AI:
 
     def possible_moves(self, g):
         """
-        Finds all current possible moves (column not full)
-        :param g:
-        :return:
+        Finds all current possible moves (where the column is not full)
+        :param g: A simulated game object, identical to the real game.
+        :return: A set of legal moves.
         """
         possible_moves = set()
         for column in range(Game.BOARD_X):
@@ -168,7 +188,9 @@ class AI:
 
     def set_next_best_move(self, children):
         """
-        :param children:
-        :return:
+        The function chose the child with the highest score and
+        set its key(column) as self.__next_move
+        :param children: A dictionary of children (key=column, value=node) 
+        :return: None
         """
         self.__next_move = max(children.keys(), key=lambda k: children[k].get_score())
