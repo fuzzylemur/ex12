@@ -28,8 +28,8 @@ class Node:
 class AI:
 
     DRAW = Game.DRAW
-    ITERATIONS = 3000
-    UPDATE_INTERVAL = 100
+    ITERATIONS = 1000
+    UPDATE_INTERVAL = 20
 
     def __init__(self):
         self.__my_color = None
