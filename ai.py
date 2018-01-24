@@ -4,23 +4,33 @@ from game import Game
 class Node:
 
     def __init__(self, score=0):
+        """The function initialize all node's private values.
+        It receives a score and returns nothing"""
         self.__score = score
         self.__children = dict()
 
     def get_score(self):
-        """"""
+        """The function returns the node's score"""
         return self.__score
 
     def get_children(self):
+        """The function returns the node's dict of children"""
         return self.__children
 
     def add_score(self, n_score):
+        """The function receives a n_score value and adds it 
+        to the current node's score"""
         self.__score += n_score
 
     def add_child(self, col, node):
+        """The function receives a col(int) and a node object
+        and adds a child to the node's dict of children
+        (child = [col]: node)"""
         self.__children[col] = node
         
     def remove_child(self, col):
+        """The function receives a col(int) and removes the child in
+        the key of the given col from the self.__children dict"""
         if col in self.__children.keys():
             del self.__children[col]
 
@@ -28,8 +38,8 @@ class Node:
 class AI:
 
     DRAW = Game.DRAW
-    ITERATIONS = 1000
-    UPDATE_INTERVAL = 20
+    ITERATIONS = 3000
+    UPDATE_INTERVAL = 100
 
     def __init__(self):
         self.__my_color = None
