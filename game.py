@@ -19,7 +19,7 @@ class Game:
     BOARD_X = 7
     BOARD_Y = 6
     WIN_LEN = 4
-    ILLEGAL_MOVE_MSG = 'Illegal move'
+    ILLEGAL_MOVE_MSG = 'Illegal move.'
 
     DIRECTIONS = [(-1,1),(0,1),(1,1),(1,0),(-1,-1),(0,-1),(1,-1),(-1,0)]    # [row change, column change]
 

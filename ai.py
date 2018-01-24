@@ -73,6 +73,7 @@ class AI:
     UPDATE_INTERVAL = 100
     FALLOFF_VALUE = 2
     SCORES = (1, 0, -1)  # (win, draw, lose)
+    NO_AI_MOVE = 'No possible AI moves.'
 
     def __init__(self):
         """
@@ -106,7 +107,11 @@ class AI:
         possible_moves = self.possible_moves(g)             # find possible moves (col is not full)
         self.__next_move = sample(possible_moves, 1)[0]     # and pick one randomly as a default
 
+        if len(possible_moves) == 0:
+            raise Exception(self.NO_AI_MOVE)
+
         try:
+
             last_col = g.get_last_coord()                   # see what was the last move played
             if last_col is not None:                            # if not the first move and
                 if self.__cur_node.get_children() != dict():    # current node not empty

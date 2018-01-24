@@ -81,7 +81,10 @@ class FourInARow:
         board, register, cell_set, counter = self.__game.get_attr_for_sim()
         sim_game.set_attr_for_sim(board, register, cell_set, counter)
 
-        self.__ai.find_legal_move(sim_game, self.play_my_move)
+        try:
+            self.__ai.find_legal_move(sim_game, self.play_my_move)
+        except:
+            self.__screen.print_to_screen(self.__ai.NO_AI_MOVE, self.__my_color)
 
     def play_my_move(self, column):
         """
