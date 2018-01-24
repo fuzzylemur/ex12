@@ -30,11 +30,14 @@ class Screen:
     FLASH_DELAY = 85
     FLASH_COUNT = 1000
 
+    PLAYER_ONE = Game.PLAYER_ONE    # player codes from class Game
+    PLAYER_TWO = Game.PLAYER_TWO
+
     def __init__(self, tk_root, my_color, button_func):
         """
         Initialize the Screen object
         :param tk_root: the tkinter object to act as root
-        :param my_color: self player color (PLAYER_ONE / PLAYER_TWO defined class consts of Game class)
+        :param my_color: self player color (PLAYER_ONE / PLAYER_TWO)
         :param button_func: function to bind to input buttons for making a move
         """
         self.__root = tk_root
@@ -116,7 +119,7 @@ class Screen:
         self.__msgbox1.place(x=self.TXT1_ORI[0], y=self.TXT1_ORI[1]-self.MSG_OFFSET, anchor=tk.CENTER)
         self.__msgbox2.place(x=self.TXT2_ORI[0], y=self.TXT2_ORI[1]-self.MSG_OFFSET, anchor=tk.CENTER)
 
-        if my_color == Game.PLAYER_ONE:
+        if my_color == self.PLAYER_ONE:
             self.__textbox1.config(text = "PLAYER 1\nyou")
             self.__textbox2.config(text = "PLAYER 2\nopponent")
         else:
@@ -148,12 +151,14 @@ class Screen:
 
     def update_cell(self, row, col, player, anim):
         """
-        Update the display of a cell from blank
-        :param row:
-        :param col:
-        :param player:
-        :param anim:
-        :return:
+        Update the display of a cell that was played, to show the proper coin in it.
+        Optional animation is done with the 'after' method of tkinter, called for each cell above target cell
+        with time delays between them.
+        :param row: row of cell (0 <= int <= 5)
+        :param col: column of cell (0 <= int <= 6)
+        :param player: player who made the move (PLAYER_ONE / PLAYER_TWO)
+        :param anim: True to do the play animated, False otherwise (for AI mode)
+        :return: None
         """
         coin = self.__coin1
         if player == Game.PLAYER_TWO:
@@ -169,22 +174,30 @@ class Screen:
 
     def anim_helper(self, row, col, coin):
         """
-        :return:
+        Helper function for animating moves. Sets previous cell in animation to be blank and next one
+        to show the player coin.
+        :param row: row of cell (0 <= int <= 5)
+        :param col: column of cell (0 <= int <= 6)
+        :param coin: ImageTK object of the coin of player (self.__coin1 / coin2)
+        :return: None
         """
-        if row > 0:
+        if row > 0:                                             # clear previous board cell in animation
             self.__cells[row-1][col].image = self.__blank
             self.__cells[row-1][col].configure(image=self.__blank)
 
-        self.__cells[row][col].image = coin
+        self.__cells[row][col].image = coin                     # and set next one
         self.__cells[row][col].configure(image=coin)
 
     def win(self, coord, direction, winner):
         """
-        :param coord:
-        :param direction:
-        :return:
+        Function to handle the exciting display of a win event.
+        Also uses 'after' to trigger animations.
+        :param coord: coordinate of win (row, col)
+        :param direction: direction of win (row, col)
+        :param winner: player who won (PLAYER_ONE / PLAYER_TWO)
+        :return: None
         """
-        if winner == Game.DRAW:
+        if winner == Game.DRAW:         # nothing special if it's a draw
             return
 
         row, col = coord
@@ -194,7 +207,7 @@ class Screen:
         if winner == Game.PLAYER_TWO:
             win_coin = self.__coin2
 
-        cell_list = []
+        cell_list = []                  # create list of cells in win sequence
         for i in range(Game.WIN_LEN):
             cell_list.append(self.__cells[row+i*dir_row][col+i*dir_col])
 
@@ -203,8 +216,12 @@ class Screen:
 
     def win_helper(self, cell_list, index, win_coin):
         """
-        :param index:
-        :return:
+        A helper function for the win display. Sets previous cell in animation to be blank and next one
+        to show the player coin.
+        :param cell_list: list of cells of winning sequence (list of tk.Label objects)
+        :param index: index of cell in list to update
+        :param win_coin: ImageTK object of the coin of player (self.__coin1 / coin2)
+        :return: None
         """
         if index < self.FLASH_COUNT-1:
             cell_list[index % Game.WIN_LEN].image = self.__blank
@@ -215,17 +232,21 @@ class Screen:
 
     def print_to_screen(self, msg, player, end=False):
         """
-        :param msg:
-        :return:
+        Prints a message for the appropriate user on the screen, For a certain time
+        before clearing the message (consts DEFAULT_TIMEOUT/END_TIMEOUT)
+        :param msg: message to be displayed (string)
+        :param player: player to display the message to (PLAYER_ONE / PLAYER_TWO)
+        :param end: True if message is game end message, False if not
+        :return: None
         """
-        if player == Game.PLAYER_ONE:
+        if player == self.PLAYER_ONE:
             self.__msgbox1.config(text=msg)
             if end:
                 self.__root.after(self.END_TIMEOUT, self.clear_msg, player)
             else:
                 self.__root.after(self.DEFAULT_TIMEOUT, self.clear_msg, player)
 
-        elif player == Game.PLAYER_TWO:
+        elif player == self.PLAYER_TWO:
             self.__msgbox2.config(text=msg)
             if end:
                 self.__root.after(self.END_TIMEOUT, self.clear_msg, player)
@@ -234,14 +255,12 @@ class Screen:
 
     def clear_msg(self, player):
         """
-        :param player:
-        :return:
+        Clear a displayed message
+        :param player: player to clear message for (PLAYER_ONE / PLAYER_TWO)
+        :return: None
         """
-        if player == Game.PLAYER_ONE:
+        if player == self.PLAYER_ONE:
             self.__msgbox1.config(text='')
 
-        elif player == Game.PLAYER_TWO:
+        elif player == self.PLAYER_TWO:
             self.__msgbox2.config(text='')
-
-    def get_root(self):
-        return self.__root
