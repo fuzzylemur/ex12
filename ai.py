@@ -70,7 +70,7 @@ class AI:
 
     DRAW = Game.DRAW
     ITERATIONS = 3000
-    UPDATE_INTERVAL = 20
+    UPDATE_INTERVAL = 100
     FALLOFF_VALUE = 2
     SCORES = (1, 0, -1)  # (win, draw, lose)
 
