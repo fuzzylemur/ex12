@@ -38,7 +38,7 @@ class Node:
 class AI:
 
     DRAW = Game.DRAW
-    ITERATIONS = 3000
+    ITERATIONS = 5000
     UPDATE_INTERVAL = 100
 
     def __init__(self):
@@ -50,10 +50,13 @@ class AI:
 
     def find_legal_move(self, g, func, timeout=None):
         """
-        :param g:
-        :param func:
-        :param timeout:
-        :return:
+        The function looks fot the optimal legal ai move
+        until the timout.
+        :param g: A simulated game object, identical to the real game.
+        :param func: A function which eventually makes the move in the game.
+        :param timeout: A time variable (in seconds) which limits the function
+        run time.
+        :return: None
         """
         if self.__first_time:                                   # when running the function for the first time
             self.__my_color = g.get_current_player()            # register player colors inside AI object
@@ -79,14 +82,17 @@ class AI:
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]      # update cur node to best move
             func(self.__next_move)                                                  # and call func with that move
 
-            print('*********** move number ',g.get_counter(),'***********')
-            print('register: ', g.get_register())
-            for i, node in self.__cur_node.get_children().items():
-                print('col: ',i,'  score: ',node.get_score())
+            #print('*********** move number ',g.get_counter(),'***********')
+            #print('register: ', g.get_register())
+            #for i, node in self.__cur_node.get_children().items():
+            #    print('col: ',i,'  score: ',node.get_score())
 
     def build_tree(self, g, root, possible_moves):
         """
-        :param g:
+        The function uses the 'helper' func build_branch to build a decision tree
+        in order to find the optimal move for find_legal_move.
+        The function saves the best move it finds every UPDATE_INTERVAL iterations.
+        :param g: A simulated game object, identical to the real game.
         :param root:
         :param possible_moves:
         :return:
