@@ -195,7 +195,7 @@ def main(args):
     # Creates a FourInARow and a Tk instances
     root = tk.Tk()
     FourInARow(root, player, port, ip)
-    root.mainloop() # run the game main loop
+    root.mainloop() # runs the game main loop
 
 
 if __name__ == "__main__":
