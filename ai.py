@@ -54,7 +54,7 @@ class AI:
             self.__first_time = False
 
         possible_moves = self.possible_moves(g)                 # find possible moves (col is not full)
-        self.__next_move = sample(possible_moves, 1)[0]         # and choose one randomly as a default
+        self.__next_move = sample(possible_moves, 1)[0]         # and pick one randomly as a default
 
         try:
             last_col = g.get_last_coord()                       # see what was the last move played
@@ -105,8 +105,8 @@ class AI:
             elif winner == self.__op_color:
                 node.add_score(-1)
 
-            g.set_game_on()                         # turn game back on (getting a winner has turned it off)
-            return node.get_score()                  # and return the leaf score upwards in the recursion
+            g.set_game_on()                         # turn game object back on (getting a winner has turned it off)
+            return node.get_score()                 # and return the leaf score upwards in the recursion
 
         else:                                    # else simulated game is still on
 
@@ -133,14 +133,13 @@ class AI:
             g.unmake_move(chosen_col, temp)                             # when exiting recursion undo the move made
 
         return result/2                      # return the result from recursion divided by two
-                                             # so that results closer to current node will have more weight
+                                             # so that results closer to tree root will have more weight
     def possible_moves(self, g):
         """
         Finds all current possible moves (column not full)
         :param g:
         :return:
         """
-
         possible_moves = set()
         for column in range(Game.BOARD_X):
             if not g.is_col_full(column):
@@ -153,8 +152,7 @@ class AI:
         :param children:
         :return:
         """
-        self.__next_move = max(children.keys(), key=lambda
-            k: children[k].get_score())
+        self.__next_move = max(children.keys(), key=lambda k: children[k].get_score())
 
 
 if __name__ == "__main__":

@@ -1,18 +1,19 @@
 import sys
+import tkinter as tk
 from game import Game
 from communicator import Communicator
 from ai import AI
 from screen import Screen
-import tkinter as tk
-from time import sleep
 
 ARG_ERROR = "Illegal program arguments."
 ARG_PLAYERS = ['human', 'ai']
 ARG_PORT_MAX = 65535
+NUM_ARGS = 3
 
 
 class FourInARow:
 
+    PLAYERS = ARG_PLAYERS
     MSG_NOT_TURN = 'Not your turn!'
     MSG_DRAW = 'draw'
     MSG_WIN = 'winner!'
@@ -26,13 +27,13 @@ class FourInARow:
         """
         self.__root = root
 
-        if player == ARG_PLAYERS[1]:
+        if player == self.PLAYERS[1]:
             self.__is_ai = True
         else:
             self.__is_ai = False
 
         self.__game = Game()
-        self.__game.new_board() #Can't the game init the board?
+        self.__game.new_board()
 
         if ip:
             self.__my_color = Game.PLAYER_TWO
@@ -122,7 +123,7 @@ class FourInARow:
         Specifies the event handler for the message getting event in the
         communicator. Prints a message when invoked (and invoked by the
         communicator when a message is received).
-        :param text: the text to be printed.
+        :param message: the text to be printed.
         :return: None.
         """
         if message:
@@ -136,16 +137,17 @@ def main(args):
     player = args[1]
     port = int(args[2])
     ip = None
-    if len(args) > 3:
-        ip = args[3]
+    if len(args) > NUM_ARGS:
+        ip = args[NUM_ARGS]
 
     root = tk.Tk()
     FourInARow(root, player, port, ip)
     root.mainloop()
 
+
 if __name__ == "__main__":
 
-    if not 2 < len(sys.argv) < 5:
+    if not NUM_ARGS-1 < len(sys.argv) < NUM_ARGS+1:
         print(ARG_ERROR)
         sys.exit()
         

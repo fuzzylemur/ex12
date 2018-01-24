@@ -11,7 +11,7 @@ class Game:
     WIN_LEN = 4
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
-    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]       # removed UP direction. problems?
+    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]
 
     def __init__(self):
         """
@@ -34,37 +34,6 @@ class Game:
                 self.__board[row, col] = self.EMPTY_CELL
 
         self.__cell_set = set(self.__board.keys())
-
-    def make_move(self, column):
-        """
-        :param column:
-        :return:
-        """
-        row = self.__register[column]
-
-        if row == -1 or self.__win:
-            raise Exception(self.ILLEGAL_MOVE_MSG)
-
-        coord = row, column
-        self.__board[coord] = self.get_current_player()
-        self.__last_coord = coord
-        self.__counter += 1
-        self.__register[column] -= 1
-
-
-    def unmake_move(self, column, last_move):
-        """
-        :param col:
-        :param last_move:
-        :return:
-        """
-        row = self.__register[column]+1
-        coord = row, column
-
-        self.__board[coord] = self.EMPTY_CELL
-        self.__last_coord = last_move
-        self.__counter -= 1
-        self.__register[column] += 1
 
     def get_player_at(self, row, col):
         """
@@ -92,6 +61,36 @@ class Game:
             return True
         else:
             return False
+
+    def make_move(self, column):
+        """
+        :param column:
+        :return:
+        """
+        row = self.__register[column]
+
+        if row == -1 or self.__win:
+            raise Exception(self.ILLEGAL_MOVE_MSG)
+
+        coord = row, column
+        self.__board[coord] = self.get_current_player()
+        self.__last_coord = coord
+        self.__counter += 1
+        self.__register[column] -= 1
+
+    def unmake_move(self, column, last_move):
+        """
+        :param column:
+        :param last_move:
+        :return:
+        """
+        row = self.__register[column]+1
+        coord = row, column
+
+        self.__board[coord] = self.EMPTY_CELL
+        self.__last_coord = last_move
+        self.__counter -= 1
+        self.__register[column] += 1
 
     def get_winner(self):
         """
@@ -124,6 +123,25 @@ class Game:
         if self.__counter == self.BOARD_X*self.BOARD_Y:
             self.__win = self.DRAW
             return self.DRAW
+
+    def get_attr_for_sim(self):
+        """
+        :return:
+        """
+        return self.__board, self.__register, self.__cell_set, self.__counter
+
+    def set_attr_for_sim(self, board, register, cell_set, counter):
+        """
+        :param board:
+        :param register:
+        :param cell_set:
+        :param counter:
+        :return:
+        """
+        self.__board = board
+        self.__register = register
+        self.__cell_set = cell_set
+        self.__counter = counter
 
     def print_board(self):
         """"""
@@ -163,31 +181,3 @@ class Game:
     def set_game_on(self):
         """"""
         self.__win = None
-
-    def get_attr_for_sim(self):
-        """
-        :return:
-        """
-        return self.__board, self.__register, self.__cell_set, self.__counter
-
-    def set_attr_for_sim(self, board, register, cell_set, counter):
-        """
-        :param board:
-        :param register:
-        :param cell_set:
-        :param counter:
-        :return:
-        """
-        self.__board = board
-        self.__register = register
-        self.__cell_set = cell_set
-        self.__counter = counter
-
-    def sim(self):
-        self.new_board()
-        self.make_move(0)
-        self.make_move(6)
-        self.make_move(1)
-        self.make_move(6)
-        self.make_move(2)
-        self.make_move(5)
