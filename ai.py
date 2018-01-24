@@ -83,7 +83,7 @@ class AI:
         finally:  # when function is halted
 
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]  # update cur node to best move
-            func(self.__next_move)  # and call func with that move
+            func(self.__next_move)                                              # and call func with that move
 
             print('*********** move number ', g.get_counter(), '***********')
             print('register: ', g.get_register())
@@ -172,10 +172,3 @@ class AI:
         :return:
         """
         self.__next_move = max(children.keys(), key=lambda k: children[k].get_score())
-
-
-if __name__ == "__main__":
-    ai = AI()
-    g1 = Game()
-
-    ai.find_legal_move(g1, lambda x: x)

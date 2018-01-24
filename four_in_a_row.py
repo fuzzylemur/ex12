@@ -68,7 +68,8 @@ class FourInARow:
         """
         :return:
         """
-        self.one_turn(column, self.__my_color)
+        if self.one_turn(column, self.__my_color):
+            self.__communicator.send_message(str(column))
 
     def one_turn(self, column, player):
         """
@@ -81,7 +82,7 @@ class FourInARow:
             try:
                 self.__game.make_move(column)
                 row, col = self.__game.get_last_coord()
-                self.__communicator.send_message(str(column))
+                move_done = True
 
                 if self.__is_ai:
                     self.__screen.update_cell(row, col, player, anim=False)
@@ -99,6 +100,8 @@ class FourInARow:
         winner = self.__game.get_winner()
         if winner is not None:
             self.end_game(winner)
+
+        return move_done
 
     def end_game(self, winner):
         """
@@ -128,7 +131,9 @@ class FourInARow:
         :return: None.
         """
         if message:
+            print('message ', message)
             self.one_turn(int(message[0]), self.__op_color)
+            self.__game.print_board()
             if self.__is_ai:
                 if self.__game.get_win_info()[1] is None:
                     self.ai_find_move()
