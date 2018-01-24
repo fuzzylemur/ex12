@@ -57,12 +57,9 @@ class AI:
             self.__first_time = False
 
         possible_moves = self.possible_moves(g)                 # find possible moves (col is not full)
-        if len(possible_moves) == 0:                             # if no possible moves return None
-            return None
         self.__next_move = sample(possible_moves, 1)[0]         # and pick one randomly as a default
 
         try:
-
             last_col = g.get_last_coord()                       # see what was the last move played
             if last_col is not None:                                    # if not the first move and
                 if self.__cur_node.get_children() != dict():            # current node not empty
@@ -71,7 +68,7 @@ class AI:
 
             self.build_tree(g, self.__cur_node)                         # and build a tree from that node
 
-        finally:                                                # when function is halted
+        finally:                                                                    # when function is halted
 
             self.__cur_node = self.__cur_node.get_children()[self.__next_move]      # update cur node to best move
             func(self.__next_move)                                                  # and call func with that move
