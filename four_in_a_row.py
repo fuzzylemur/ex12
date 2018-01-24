@@ -27,7 +27,6 @@ class FourInARow:
     turn order and legality, communication between instances 
     and controlling the objects that manage GUI, gameplay and AI.
     """
-    
     PLAYERS = ARG_PLAYERS
     MSG_NOT_TURN = 'Not your turn!'
     MSG_DRAW = 'draw'
@@ -44,12 +43,12 @@ class FourInARow:
         """
         self.__root = root
         self.__game = Game()
-        # decide whether the player is AI or not
+                                                # decide whether the player is AI or not
         if player == self.PLAYERS[1]:
             self.__is_ai = True
         else:
             self.__is_ai = False
-        # Set both Players colors
+                                                # Set both Players colors
         if ip:
             self.__my_color = Game.PLAYER_TWO
             self.__op_color = Game.PLAYER_ONE
@@ -61,13 +60,12 @@ class FourInARow:
         self.__communicator = Communicator(root, port, ip)
         self.__communicator.connect()
         self.__communicator.bind_action_to_message(self.handle_message)
-        # If the player is Ai we initialize an AI object and call
-        # ai_find_move to make the first move.
-        if self.__is_ai:
+
+        if self.__is_ai:                              # If the player is AI we initialize an AI object
             self.__screen = Screen(root, self.__my_color, lambda y: None)
             self.__ai = AI()
             if self.__my_color == Game.PLAYER_ONE:
-                self.ai_find_move()
+                self.ai_find_move()                   # and call ai_find_move to make the first move.
         else:
             self.__screen = Screen(root, self.__my_color, self.play_my_move)
 
@@ -78,7 +76,7 @@ class FourInARow:
         Then, it makes the next AI move using the AI find_legal_move method.
         :return: None
         """
-        # The below crates a copy of the game instance and sends it to the AI.
+        # creates a copy of the game instance and sends it to the AI.
         sim_game = Game()
         board, register, cell_set, counter = self.__game.get_attr_for_sim()
         sim_game.set_attr_for_sim(board, register, cell_set, counter)
@@ -90,7 +88,7 @@ class FourInARow:
         The function handles a certain game move, both by the AI instance
         and when a GUI button is pressed, by calling the class one_turn method
         and sending the opponent a message using the communicator instance.
-        :param column: An integer in range 0-6 which represent a game column.
+        :param column: column in board to play (0 <= int <= 6)
         :return: None
         """
         if self.one_turn(column, self.__my_color):
@@ -104,9 +102,9 @@ class FourInARow:
         2. Update the screen instance according to the move.
         3. Send the opponent an message about the move it made.
         4. Checks if the game ended using the game get_winner method.
-        :param column: An integer in range 0-6 which represent a game column.
+        :param column: column in board (0 <= int <= 6)
         :param player: The player which made the turn. Player_one/Player_two.
-        :return: True if the move was done(may be illegal move). None otherwise.
+        :return: True if the move was done (may be illegal move). None otherwise.
         """
         # The below if make sure that both players can play only when its their turn.
         if self.__game.get_current_player() == player: 
@@ -140,13 +138,11 @@ class FourInARow:
         The function handles the situation where the game is done.
         Its using the screen instance to print the game result 
         (win/loss/draw) to the graphical interface.
-        :param winner: The game result (win/loss/draw).
+        :param winner: The game result (PLAYER_ONE / PLAYER_TWO / DRAW).
         :return: None
         """
-        # Ask the game instance for the win_coord and direction
-        # In order to emphasize the winning sequence.
-        win_coord, win_dir = self.__game.get_win_info()
-        self.__screen.win(win_coord, win_dir, winner)
+        win_coord, win_dir = self.__game.get_win_info()       # Ask the game instance for the win_coord and direction
+        self.__screen.win(win_coord, win_dir, winner)         # In order to display the winning sequence (FLASH!)
 
         if winner == Game.DRAW:
             self.__screen.print_to_screen(self.MSG_DRAW, self.__my_color, end=True)
@@ -163,51 +159,49 @@ class FourInARow:
     def handle_message(self, message=None):
         """
         The function specifies the event handler for the message getting
-        event in the communicator. When it invokes, it calls the one_turn
+        event in the communicator. When it is invoked, it calls the one_turn
         method in order to update the opponent move on its screen instance
         or end the game if needed. it invoked by the
         communicator when a message is received.
-        :param message: The lase move the opponent made. Default is None.
+        :param message: The last move the opponent made (0 <= int <= 6) Default is None.
         :return: None
         """
         if message:
             self.one_turn(int(message[0]), self.__op_color)
-            # If the player is AI we call ai_find_move to make the AI next move.
-            if self.__is_ai:
+            if self.__is_ai:                   # If the player is AI we call ai_find_move to make the AI next move.
                 if self.__game.get_win_info()[1] is None:
                     self.ai_find_move()
 
 
 def main(args):
-    """"The main function which initialize both FourInARow and
+    """"
+    The main function which initialize both FourInARow and
     a Tk instances in order to run the game. The function
-    receives the sys.args parameters and returns None"""
-    # unpack all args
-    player = args[PLAYER_ARGS_LOCATION]
+    receives the sys.args parameters and returns None
+    """
+    player = args[PLAYER_ARGS_LOCATION]             # unpack all args
     port = int(args[PORT_ARGS_LOCATION])
     ip = None
-    # If the user entered an IP address when calling the program
-    # we send it when calling the FourInARow constructor.
-    # else, we use ip = None.
-    if len(args) > NUM_ARGS:
-        ip = args[IP_ARGS_LOCATION]
-    # Creates a FourInARow and a Tk instances
-    root = tk.Tk()
+
+    if len(args) > NUM_ARGS:                        # If the user entered an IP address when calling the program
+        ip = args[IP_ARGS_LOCATION]                 # we send it when calling the FourInARow constructor.
+                                                    # else, we use ip = None.
+
+    root = tk.Tk()                                  # Creates a FourInARow and a Tk object instances
     FourInARow(root, player, port, ip)
-    root.mainloop() # runs the game main loop
+    root.mainloop()                                 # runs the game main loop
 
 
 if __name__ == "__main__":
-    # Validates that the given cmd arguments are correct
-    if not NUM_ARGS-1 < len(sys.argv) < NUM_ARGS+2:
-        print(ARG_ERROR) # If there are less then 2 or more then 3
-        sys.exit()       # arguments we print an error msg and call sys.exit
+    if not NUM_ARGS-1 < len(sys.argv) < NUM_ARGS+2:         # Validates that the given cmd arguments are correct
+        print(ARG_ERROR)                                    # If there are less then 2 or more then 3
+        sys.exit()                                          # arguments we print an error msg and call sys.exit
         
-    if sys.argv[PLAYER_ARGS_LOCATION] not in ARG_PLAYERS: # Make player input is human/ai.
+    if sys.argv[PLAYER_ARGS_LOCATION] not in ARG_PLAYERS:   # Make player input is human/ai.
         print(ARG_ERROR)
         sys.exit()
 
-    if int(sys.argv[PORT_ARGS_LOCATION]) > ARG_PORT_MAX: # make sure the port input is valid
+    if int(sys.argv[PORT_ARGS_LOCATION]) > ARG_PORT_MAX:    # make sure the port input is valid
         print(ARG_ERROR)
         sys.exit()
 
