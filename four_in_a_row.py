@@ -107,16 +107,16 @@ class FourInARow:
         self.__screen.win(win_coord, win_dir, winner)
 
         if winner == Game.DRAW:
-            self.__screen.print_to_screen(self.MSG_DRAW, self.__my_color)
-            self.__screen.print_to_screen(self.MSG_DRAW, self.__op_color)
+            self.__screen.print_to_screen(self.MSG_DRAW, self.__my_color, end=True)
+            self.__screen.print_to_screen(self.MSG_DRAW, self.__op_color, end=True)
 
         elif winner == self.__my_color:
-            self.__screen.print_to_screen(self.MSG_WIN, self.__my_color)
-            self.__screen.print_to_screen(self.MSG_LOSE, self.__op_color)
+            self.__screen.print_to_screen(self.MSG_WIN, self.__my_color, end=True)
+            self.__screen.print_to_screen(self.MSG_LOSE, self.__op_color, end=True)
 
         elif winner == self.__op_color:
-            self.__screen.print_to_screen(self.MSG_WIN, self.__op_color)
-            self.__screen.print_to_screen(self.MSG_LOSE, self.__my_color)
+            self.__screen.print_to_screen(self.MSG_WIN, self.__op_color, end=True)
+            self.__screen.print_to_screen(self.MSG_LOSE, self.__my_color, end=True)
 
     def handle_message(self, message=None):
         """
@@ -147,7 +147,7 @@ def main(args):
 
 if __name__ == "__main__":
 
-    if not NUM_ARGS-1 < len(sys.argv) < NUM_ARGS+1:
+    if not NUM_ARGS-1 < len(sys.argv) < NUM_ARGS+2:
         print(ARG_ERROR)
         sys.exit()
         

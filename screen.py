@@ -14,11 +14,11 @@ class Screen:
     TXT2_ORI = (852, 595)
     MSG_OFFSET = 100
 
-    MSG_TIMEOUT = 4000
+    DEFAULT_TIMEOUT = 4000
+    END_TIMEOUT = 100000
     ANIM_DELAY = 50
     FLASH_DELAY = 85
     FLASH_COUNT = 1000
-
 
     def __init__(self, tk_root, my_color, button_func):
         """
@@ -189,21 +189,27 @@ class Screen:
         cell_list[(index-1)%Game.WIN_LEN].configure(image=win_coin)
 
 
-    def print_to_screen(self, msg, player):
+    def print_to_screen(self, msg, player, end=False):
         """
         :param msg:
         :return:
         """
         if player == Game.PLAYER_ONE:
             self.__msgbox1.config(text=msg)
-            self.__root.after(self.MSG_TIMEOUT, self.clear_msg, player)
+            if end:
+                self.__root.after(self.END_TIMEOUT, self.clear_msg, player)
+            else:
+                self.__root.after(self.DEFAULT_TIMEOUT, self.clear_msg, player)
 
         elif player == Game.PLAYER_TWO:
             self.__msgbox2.config(text=msg)
-            self.__root.after(self.MSG_TIMEOUT, self.clear_msg, player)
+            if end:
+                self.__root.after(self.END_TIMEOUT, self.clear_msg, player)
+            else:
+                self.__root.after(self.DEFAULT_TIMEOUT, self.clear_msg, player)
 
 
-    def clear_msg(self,player):
+    def clear_msg(self, player):
         """
         :param player:
         :return:
