@@ -47,7 +47,7 @@ Implementation includes the following classes:
 
 - Screen:           GUI object using Tkinter library. Handles the graphical display of the game, updating moves,
                     human user input, displaying messages for invalid moves and the result at game end.
-                    Assumes a local folder named 'gui' with game element images.
+                    Assumes a local folder named 'gui' with game element images, Tkinter and PIL libraries.
 
 - Communicator:     Object handling the non-blocking communication between game instances, initiating and connecting,
                     sending and receiving messages. (Implemented by the wonderful HUJI CS crew)

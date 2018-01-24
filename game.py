@@ -1,8 +1,15 @@
+###################################################################################
+# FILE : game.py
+# WRITERS : Gil Adam, Jonathan Zedaka, giladam, jonathanzd,  200139814, 204620835
+# EXERCISE : intro2cs ex12 2017-2018
+# DESCRIPTION: Game class for four in a row game
+###################################################################################
+
 
 class Game:
     """
     Object of class Game represents the game board, handles current game state, makes moves on the board and
-    checks for game end conditions.
+    checks for game end conditions. Does not require arguments to be initialized.
     """
     EMPTY_CELL = None
     PLAYER_ONE = 0
@@ -14,7 +21,7 @@ class Game:
     WIN_LEN = 4
     ILLEGAL_MOVE_MSG = 'Illegal move'
 
-    DIRECTIONS = [[-1,1],[0,1],[1,1],[1,0],[-1,-1],[0,-1],[1,-1],[-1,0]]    # [row change, column change]
+    DIRECTIONS = [(-1,1),(0,1),(1,1),(1,0),(-1,-1),(0,-1),(1,-1),(-1,0)]    # [row change, column change]
 
     def __init__(self):
         """
@@ -100,16 +107,19 @@ class Game:
 
     def get_winner(self):
         """
-        Check to see if game has ended (win or a draw).
+        Check to see if game has ended (win or a draw). Functions checks to see if last move played completes
+        a sequence of four stones of the same color, in any of the eight directions in DIRECTIONS. If the function
+        finds a sequence of three it also checks the cell in the reverse direction from the last move coordinate
+        (in case the sequence was completed by a move in the middle of it).
         :return: const DRAW if draw, const PLAYER_ONE/PLAYER_TWO if win
         """
         if self.__last_coord is None:               # no stones on board
             return None
 
-        row, col = self.__last_coord                # look at last move played
+        row, col = self.__last_coord
         player = self.get_player_at(row, col)
 
-        for direction in self.DIRECTIONS:           # and in all directions
+        for direction in self.DIRECTIONS:
 
             for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])
@@ -118,8 +128,8 @@ class Game:
                         reverse_cell = (row - direction[0], col - direction[1])
                         if reverse_cell not in self.__cell_set or self.__board[reverse_cell] != player:
                             break
-                        else:
-                            self.__last_coord = reverse_cell
+                        else:                                    # if win move was in the middle of a sequence
+                            self.__last_coord = reverse_cell     # change last__coord to edge stone (for win display)
                     else:
                         break
 
@@ -133,16 +143,19 @@ class Game:
 
     def get_attr_for_sim(self):
         """
-        :return:
+        Get relevant attributes from game object, in order to initialize a new Game object used for
+        simulating moves without messing with original Game object.
+        :return: Values of board (dict), register (dict), cell_set (set) and counter (int)
         """
         return self.__board, self.__register, self.__cell_set, self.__counter
 
     def set_attr_for_sim(self, board, register, cell_set, counter):
         """
-        :param board:
-        :param register:
-        :param cell_set:
-        :param counter:
+        Set attributes for a Game object used for simulating moves.
+        :param board: cell coordinates and values (dictionary)
+        :param register: register of next available row in each column (dictionary)
+        :param cell_set: a set of all cell coordinates (set)
+        :param counter: counter of game moves (int)
         :return:
         """
         self.__board = board
@@ -150,41 +163,24 @@ class Game:
         self.__cell_set = cell_set
         self.__counter = counter
 
-    def print_board(self):
-        """"""
-        for i in range(6):
-            for j in range(7):
-                if self.__board[(i, j)] is None:
-                    print('_', end=' ')
-                else:
-                    print(self.__board[(i, j)], end=' ')
-            print('\n')
-        print('********************************************')
-
     def get_win_info(self):
         """
-        :return:
+        Get information on a game win / draw / ongoing game.
+        :return: a tuple of:
+        self.__last_coord: last coordinate played (row, col), coordinate of winning streak in case of a win
+        self.__win: None if game is ongoing, DRAW if draw, direction of win (row, col) if win
         """
         return self.__last_coord, self.__win
 
     def get_last_coord(self):
         """
-        :return:
+        Get the last coordinate played
+        :return: last coordinate (row, col)
         """
         return self.__last_coord
 
-    def get_counter(self):
-        """
-        :return:
-        """
-        return self.__counter
-
-    def get_register(self):
-        """
-        :return:
-        """
-        return self.__register
-
     def set_game_on(self):
-        """"""
+        """
+        Set game state to be on (used to undo a win discovered in backtracking recursion)
+        """
         self.__win = None

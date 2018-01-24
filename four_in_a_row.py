@@ -1,3 +1,10 @@
+###################################################################################
+# FILE : four_in_a_row.py
+# WRITERS : Gil Adam, Jonathan Zedaka, giladam, jonathanzd,  200139814, 204620835
+# EXERCISE : intro2cs ex12 2017-2018
+# DESCRIPTION: Main implementation of four in a row game
+###################################################################################
+
 import sys
 import tkinter as tk
 from game import Game
@@ -132,7 +139,6 @@ class FourInARow:
         if message:
             print('message ', message)
             self.one_turn(int(message[0]), self.__op_color)
-            self.__game.print_board()
             if self.__is_ai:
                 if self.__game.get_win_info()[1] is None:
                     self.ai_find_move()

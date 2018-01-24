@@ -1,3 +1,10 @@
+###################################################################################
+# FILE : communicator.py
+# WRITERS : Gil Adam, Jonathan Zedaka, giladam, jonathanzd,  200139814, 204620835
+# EXERCISE : intro2cs ex12 2017-2018
+# DESCRIPTION: Communicator class of four in a row game
+###################################################################################
+
 import socket
 
 
