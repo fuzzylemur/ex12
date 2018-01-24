@@ -107,7 +107,7 @@ class Game:
             for i in range(1, self.WIN_LEN):
                 next_cell = (row+i*direction[0], col+i*direction[1])
                 if next_cell not in self.__cell_set or self.__board[next_cell] != player:
-                    if i == 3:
+                    if i == self.WIN_LEN-1:
                         reverse_cell = (row - direction[0], col - direction[1])
                         if reverse_cell not in self.__cell_set or self.__board[reverse_cell] != player:
                             break

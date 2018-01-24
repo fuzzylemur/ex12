@@ -1,6 +1,7 @@
 from random import sample
 from game import Game
 
+
 class Node:
 
     def __init__(self, score=0):
@@ -30,6 +31,8 @@ class AI:
     DRAW = Game.DRAW
     ITERATIONS = 1000
     UPDATE_INTERVAL = 20
+    FALLOFF_VALUE = 2
+    SCORES = (1, 0, -1)     # (win, draw, lose)
 
     def __init__(self):
         self.__my_color = None
@@ -58,11 +61,12 @@ class AI:
 
         try:
             last_col = g.get_last_coord()                       # see what was the last move played
-            if last_col is not None and self.__cur_node.get_children() != dict():   # if not the first move and
-                children = self.__cur_node.get_children()                           # current node not empty
-                self.__cur_node = children[last_col[1]]                             # update current node accordingly
+            if last_col is not None and :                               # if not the first move and
+                if self.__cur_node.get_children() != dict():            # current node not empty
+                children = self.__cur_node.get_children()
+                self.__cur_node = children[last_col[1]]                 # update current node accordingly
 
-            self.build_tree(g, self.__cur_node, possible_moves)                     # and build a tree from that node
+            self.build_tree(g, self.__cur_node)                         # and build a tree from that node
 
         finally:                                                                    # when function is halted
 
@@ -74,39 +78,38 @@ class AI:
             for i, node in self.__cur_node.get_children().items():
                 print('col: ',i,'  score: ',node.get_score())
 
-    def build_tree(self, g, root, possible_moves):
+    def build_tree(self, g, root):
         """
         :param g:
         :param root:
-        :param possible_moves:
         :return:
         """
         for i in range(self.ITERATIONS):                    # build branches in iteratively
-            self.build_branch(g, root, possible_moves)
+            self.build_branch(g, root)
 
             if i % self.UPDATE_INTERVAL == 0:               # update best move every now and then
                 children = self.__cur_node.get_children()
                 self.set_next_best_move(children)
 
-    def build_branch(self, g, node, possible_moves):
+    def build_branch(self, g, node):
         """
         :param g:
         :param node:
-        :param possible_moves:
         :return:
         """
         winner = g.get_winner()
         if winner is not None:                   # base case of recursion, simulated game has ended
                                                     # give the leaf a score based on end result
             if winner == self.__my_color:
-                node.add_score(1)
+                score = self.SCORES[0]
             elif winner == self.DRAW:
-                node.add_score(0)
+                score = self.SCORES[1]
             elif winner == self.__op_color:
-                node.add_score(-1)
+                score = self.SCORES[2]
 
             g.set_game_on()                         # turn game object back on (getting a winner has turned it off)
-            return node.get_score()                 # and return the leaf score upwards in the recursion
+            node.add_score(score)                   # add score to node
+            return score                            # and return the score upwards in the recursion
 
         else:                                    # else simulated game is still on
 
@@ -116,24 +119,24 @@ class AI:
                     node.remove_child(col)          # and remove children for illegal moves (col is full)
 
             chosen_col = sample(new_moves, 1)[0]    # pick the next move randomly
-            temp = g.get_last_coord()               # record the last move made (for undoing when backtracking)
+            temp_coord = g.get_last_coord()         # record the last move made (for undoing when backtracking)
             g.make_move(chosen_col)                 # and make that move
 
             if chosen_col in node.get_children().keys():            # if node already has a child for that move
-                next_node = node.get_children()[chosen_col]             # go to that child node
-                result = self.build_branch(g, next_node, new_moves)     # continue building the branch from it
-                node.add_score(result)                                  # and update the node score
+                next_node = node.get_children()[chosen_col]                  # go to that child node
+                child_score = self.build_branch(g, next_node)     # continue building the branch from it
+                node.add_score(child_score)                                  # and update the node score
 
             else:                                                   # if child for this move does not exist
-                child = Node(0)                                         # create a node for it
-                node.add_child(chosen_col, child)                       # link it to parent node
-                result = self.build_branch(g, child, new_moves)         # continue building the branch from it
-                node.add_score(result)                                  # and update the node score
+                child = Node(0)                                              # create a node for it
+                node.add_child(chosen_col, child)                            # link it to parent node
+                child_score = self.build_branch(g, child)         # continue building the branch from it
+                node.add_score(child_score)                                  # and update the node score
 
-            g.unmake_move(chosen_col, temp)                             # when exiting recursion undo the move made
+            g.unmake_move(chosen_col, temp_coord)                 # when exiting recursion undo the move made
 
-        return result/2                      # return the result from recursion divided by two
-                                             # so that results closer to tree root will have more weight
+        return child_score/self.FALLOFF_VALUE           # return the result from recursion divided by two
+                                                        # so that results closer to tree root will have more weight
     def possible_moves(self, g):
         """
         Finds all current possible moves (column not full)
@@ -158,7 +161,6 @@ class AI:
 if __name__ == "__main__":
 
     ai = AI()
-    g = Game()
-    g.sim()
+    g1 = Game()
 
-    ai.find_legal_move(g,lambda x:x)
+    ai.find_legal_move(g1,lambda x:x)

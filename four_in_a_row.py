@@ -26,14 +26,13 @@ class FourInARow:
         :param ip:
         """
         self.__root = root
+        self.__game = Game()
+        self.__game.new_board()
 
         if player == self.PLAYERS[1]:
             self.__is_ai = True
         else:
             self.__is_ai = False
-
-        self.__game = Game()
-        self.__game.new_board()
 
         if ip:
             self.__my_color = Game.PLAYER_TWO
