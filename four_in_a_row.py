@@ -69,17 +69,19 @@ class FourInARow:
         :return:
         """
         self.one_turn(column, self.__my_color)
-        self.__communicator.send_message(str(column))
 
     def one_turn(self, column, player):
         """
         :param column:
+        :param player:
         :return:
         """
         if self.__game.get_current_player() == player:
+
             try:
                 self.__game.make_move(column)
                 row, col = self.__game.get_last_coord()
+                self.__communicator.send_message(str(column))
 
                 if self.__is_ai:
                     self.__screen.update_cell(row, col, player, anim=False)

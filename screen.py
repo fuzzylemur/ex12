@@ -181,11 +181,11 @@ class Screen:
         :return:
         """
         if index < self.FLASH_COUNT-1:
-            cell_list[index%Game.WIN_LEN].image = self.__blank
-            cell_list[index%Game.WIN_LEN].configure(image=self.__blank)
+            cell_list[index % Game.WIN_LEN].image = self.__blank
+            cell_list[index % Game.WIN_LEN].configure(image=self.__blank)
 
-        cell_list[(index-1)%Game.WIN_LEN].image = win_coin
-        cell_list[(index-1)%Game.WIN_LEN].configure(image=win_coin)
+        cell_list[(index-1) % Game.WIN_LEN].image = win_coin
+        cell_list[(index-1) % Game.WIN_LEN].configure(image=win_coin)
 
     def print_to_screen(self, msg, player, end=False):
         """
@@ -219,16 +219,3 @@ class Screen:
 
     def get_root(self):
         return self.__root
-
-
-def func(x):
-    pass
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    screen = Screen(root, 0, func)
-    screen.win((0,0),(1,0),1)
-    root.mainloop()
-
-
